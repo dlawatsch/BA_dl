@@ -12,28 +12,35 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.fit.component.JCasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
+import org.w3c.dom.Element;
 
+import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
+import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resource;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.resources.ResourceUtils;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
 
-public class IslandicCorpusReader extends JCasCollectionReader_ImplBase
+public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		{
     /**
      * Input file
      */
-    public static final String PARAM_INPUT_FILE = "InputFile";
-    @ConfigurationParameter(name = PARAM_INPUT_FILE, mandatory = true)
-    private String inputFile;
-    String documentText;
-    private String[] sentences;
     private String currentSentence;
     private int sentenceCount;
-
+    static int currentDocument;
+	static Object[] allDocuments;
+	static Resource currentFileName;
+	private List<String> lines;
     /*
      * initializes the reader
      */
@@ -42,48 +49,21 @@ public class IslandicCorpusReader extends JCasCollectionReader_ImplBase
         throws ResourceInitializationException
     {
         super.initialize(context);
-        try {
-            URL resourceUrl = ResourceUtils.resolveLocation(inputFile);
-
-            documentText = FileUtils.readFileToString(new File(resourceUrl.toURI())); 
-            String[] parts = documentText.split("\\t\\t\\t*");
-                for(String element : parts){
-                	System.out.println(element);
-                	System.out.println("!!!!!!!!!!!!!!!!!!!sentence end!");
-                		String[] wordPlusPOS = element.split("\\n");
-	                	for(int i = 1; i < wordPlusPOS.length-2; i+=2){
-	                		if(wordPlusPOS[i].length() > 1){
-	                		System.out.println("Token: " + wordPlusPOS[i] + " POS: " + wordPlusPOS[i+1] + " !!");
-	                		}
-	                	}
-                }
-            
-        } 
-        catch (IOException e) {
-        	e.printStackTrace();
-        }
-        catch (URISyntaxException ex) {
-        	ex.printStackTrace();
-        }	    
-        System.out.println(inputFile.length());
-        System.out.println("test");
-//        	documentText = FileUtils.readLines(inputFile);
-//        	for(String out : documentText){
-//        		System.out.println(out);
-//        	}
-//        	sentences = documentText.split("");
-		System.out.println(documentText);
-		sentenceCount = 0;
+        allDocuments = getResources().toArray();
+        currentDocument = 0;
     }
     
+	public Progress[] getProgress() {
+	    return new Progress[] { new ProgressImpl(currentDocument, allDocuments.length , "files") };
+	}
+	
     /*
      * true, if there is a next document, false otherwise
      */
-    public boolean hasNext()
-        throws IOException, CollectionException
-    {
-        return sentenceCount < sentences.length;
-    }
+	public boolean hasNext() throws IOException, CollectionException {
+		return super.hasNext() ;
+	}
+	
 
     /*
      * feeds the next document into the pipeline
@@ -92,50 +72,49 @@ public class IslandicCorpusReader extends JCasCollectionReader_ImplBase
     public void getNext(JCas jcas)
         throws IOException, CollectionException
     {
-//        List<String> tupel = new ArrayList<String>();
-//
-//        // read all lines that belong to one tupel (language code + sentence)
-//        // an empty line separates tupel
-//        String next = null;
-//        while (hasNext() && !(next = lines.get(currentLine)).isEmpty()) {
-//            tupel.add(next);
-//            currentLine++;
-//        }
-//
-//        // add gold standard value as annotation
-//        // the first line is the language code
-//        GoldLanguage goldLanguage = new GoldLanguage(jcas);
-//        goldLanguage.setLanguage(tupel.get(0));
-//        goldLanguage.addToIndexes();
-//
-//        // add actual text of the document
-//        // we will add each word as own token and then set the document text
-//
-//        String documentText = "";
-//        for (int i = 1; i < tupel.size(); i++) {
-//            String word = tupel.get(i);
-//            documentText += word;
-//
-//            // add the token annotated as own type
-//            int start = documentText.length() - word.length();
-//            int end = documentText.length();
-//            Token t = new Token(jcas, start, end);
-//            t.addToIndexes();
-//
-//            // append space as separator for next token
-//            documentText += " ";
-//        }
-//
-//        jcas.setDocumentText(documentText.trim());
-//
-//        currentLine++;
-    }
-
-    /*
-     * informs the pipeline about the current progress
-     */
-    public Progress[] getProgress()
-    {
-        return new Progress[] { new ProgressImpl(sentenceCount, sentences.length, "sentences") };
+		Resource nextFile = nextFile();
+		lines = FileUtils.readLines(nextFile.getResource().getFile());
+		String sentence = "";
+        List<String> sentences = new ArrayList<String>();
+		try{
+				for(String line : lines){
+					if(line.startsWith("\t")){
+						sentences.add(sentence);
+						sentence = "";
+						continue;
+					}
+					sentence += line.trim() +"\n";
+				}
+				String documentText = "";
+				for(String sentenceB : sentences){
+					String[] parts = sentenceB.split("\n");
+					for(String part : parts){
+						String[] wordPlusPOS = part.split("\t");
+							if(wordPlusPOS.length == 2){
+							int end = wordPlusPOS[0].length();
+							Token t = new Token (jcas, 0, end);
+			                TextClassificationUnit unit = new TextClassificationUnit(jcas, t.getBegin(), t.getEnd());
+			                
+			                // will add the token content as a suffix to the ID of this unit 
+			                unit.setSuffix(t.getCoveredText());
+			               // List<POS> posList = JCasUtil.selectCovered(jcas, POS.class, unit);
+//			                for (POS pos : posList){
+//			                	System.out.println(pos.getClass().getSimpleName());
+//			                }
+			               // System.out.println(t.getCoveredText());
+			                unit.addToIndexes();
+			                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, t.getBegin(), t.getEnd());
+			                outcome.setOutcome(wordPlusPOS[1]);
+			                outcome.addToIndexes();
+			                documentText += wordPlusPOS[0] + " ";
+							}
+					}
+				}
+				jcas.setDocumentText(documentText.trim());
+				//System.out.println(jcas.getDocumentText());
+			
+		}catch (Exception e){
+			e.printStackTrace();
+		}
     }
 }
