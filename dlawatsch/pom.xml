@@ -155,8 +155,14 @@
 			<artifactId>dkpro-lab-core</artifactId>
 		</dependency>
 		<dependency>
+  			<groupId>org.uimafit</groupId>
+ 			 <artifactId>uimafit</artifactId>
+ 			 <version>1.4.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.uima</groupId>
 			<artifactId>uimafit-core</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.uima</groupId>

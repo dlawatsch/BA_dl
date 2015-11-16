@@ -42,13 +42,24 @@ import de.tudarmstadt.ukp.dkpro.tc.api.io.TCReaderSequence;
 
 public class CorpusReader extends TeiReader
 implements TCReaderSequence{
-    /*
+   
+	static int tokenCount;
+	static int percentageCount;
+	
+	/*
      * initializes the reader
      */
     //@Override
-    static int token_count;
-    
-	  @Override
+    public void initialize(UimaContext context)
+            throws ResourceInitializationException
+        {
+            super.initialize(context);
+            percentageCount = 10;
+            tokenCount = 0;
+
+        }   
+
+    @Override
 	    public void getNext(CAS cas)
 	        throws IOException, CollectionException
 	    {
@@ -61,24 +72,36 @@ implements TCReaderSequence{
 	        catch (CASException e) {
 	            throw new CollectionException(e);
 	        }
-	        token_count = 0;
-
+	        
+	        boolean reachedLimit = false;
 	        for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
 	            TextClassificationSequence sequence = new TextClassificationSequence(jcas, sentence.getBegin(), sentence.getEnd());
 	            sequence.addToIndexes();
 	            
+	            if(reachedLimit == true){
+	            	break;
+	            }
+	            
 	            for (Token token : JCasUtil.selectCovered(jcas, Token.class, sentence)) {
-
-	                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
-	            	token_count++;
-	                // will add the token content as a suffix to the ID of this unit 
-	                unit.setSuffix(token.getCoveredText());
-	                unit.addToIndexes();
-	                System.out.print(" " + unit.getCoveredText() + token_count + " ");
-	                
-	                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-	                outcome.setOutcome(getTextClassificationOutcome(jcas, unit));
-	                outcome.addToIndexes();
+	            	if(tokenCount < percentageCount*5){
+		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
+		            	tokenCount++;
+		                // will add the token content as a suffix to the ID of this unit 
+		                unit.setSuffix(token.getCoveredText());
+		                unit.addToIndexes();
+		                System.out.print(" " + unit.getCoveredText() + tokenCount + " ");
+		                
+		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
+		                outcome.setOutcome(getTextClassificationOutcome(jcas, unit));
+		                System.out.println(" " + outcome.getOutcome() + " ");
+		                outcome.addToIndexes();
+	            	}else{
+	            		reachedLimit = true;
+	            		percentageCount++;
+	            		System.out.println();
+	            		System.out.println();
+	            		break;
+	            	}
 	            }
 	         }
 	        

@@ -22,5 +22,16 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="/dkpro-tc-examples"/>
+	<classpathentry kind="src" path="/de.tudarmstadt.ukp.dkpro.core.io.imscwb-asl"/>
+	<classpathentry kind="lib" path="/home/dominik/.m2/repository/org/apache/uima/uimaj-core/2.8.1/uimaj-core-2.8.1.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.apache.uima"/>
+			<attribute name="maven.artifactId" value="uimaj-core"/>
+			<attribute name="maven.version" value="2.8.1"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
