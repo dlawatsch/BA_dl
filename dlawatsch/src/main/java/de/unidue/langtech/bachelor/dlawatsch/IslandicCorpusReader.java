@@ -22,6 +22,7 @@ import org.w3c.dom.Element;
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
 import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resource;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.resources.ResourceUtils;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -74,6 +75,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
     {
 		Resource nextFile = nextFile();
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
+		System.out.println(nextFile.getLocation());
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();
 		try{
@@ -93,9 +95,8 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 							if(wordPlusPOS.length == 2){
 							int end = wordPlusPOS[0].length();
 							Token t = new Token (jcas, 0, end);
+//							t.setPos(v);
 			                TextClassificationUnit unit = new TextClassificationUnit(jcas, t.getBegin(), t.getEnd());
-			                
-			                // will add the token content as a suffix to the ID of this unit 
 			                unit.setSuffix(t.getCoveredText());
 			               // List<POS> posList = JCasUtil.selectCovered(jcas, POS.class, unit);
 //			                for (POS pos : posList){
@@ -110,7 +111,17 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 							}
 					}
 				}
+//				
+//				Sentence s = new Sentence(jcas, 0, 100);
+//				s.addToIndexes();
+				
 				jcas.setDocumentText(documentText.trim());
+                DocumentMetaData test = null;
+                test.setDocumentId("test");
+                test.setDocumentUri("TEST");
+                test.setLanguage("is");
+                test.addToIndexes();
+                System.out.println(test.getCoveredText());
 				//System.out.println(jcas.getDocumentText());
 			
 		}catch (Exception e){
