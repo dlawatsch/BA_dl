@@ -149,7 +149,11 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		                
 		        		posCount++;
 		        	}
-		        }    
+
+		        }   
+	        	jcas.setDocumentLanguage("is");
+	        	DocumentMetaData meta = DocumentMetaData.create(jcas);
+	        	meta.setDocumentId(nextFile.getLocation());
 		}catch (Exception e){
 			e.printStackTrace();
 		}
