@@ -75,9 +75,10 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
     {
 		Resource nextFile = nextFile();
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
-		System.out.println(nextFile.getLocation());
+//		System.out.println(nextFile.getLocation());
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();
+        
 		try{
 				for(String line : lines){
 					if(line.startsWith("\t")){
@@ -87,43 +88,68 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 					}
 					sentence += line.trim() +"\n";
 				}
+				
 				String documentText = "";
+				List<String> cleanedSentences = new ArrayList<String>();
+				List<String> allPos = new ArrayList<String>();
+				
 				for(String sentenceB : sentences){
 					String[] parts = sentenceB.split("\n");
+					String actualSentence = "";
+					
 					for(String part : parts){
 						String[] wordPlusPOS = part.split("\t");
 							if(wordPlusPOS.length == 2){
-							int end = wordPlusPOS[0].length();
-							Token t = new Token (jcas, 0, end);
-//							t.setPos(v);
-			                TextClassificationUnit unit = new TextClassificationUnit(jcas, t.getBegin(), t.getEnd());
-			                unit.setSuffix(t.getCoveredText());
-			               // List<POS> posList = JCasUtil.selectCovered(jcas, POS.class, unit);
-//			                for (POS pos : posList){
-//			                	System.out.println(pos.getClass().getSimpleName());
-//			                }
-			               // System.out.println(t.getCoveredText());
-			                unit.addToIndexes();
-			                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, t.getBegin(), t.getEnd());
-			                outcome.setOutcome(wordPlusPOS[1]);
-			                outcome.addToIndexes();
 			                documentText += wordPlusPOS[0] + " ";
+			                allPos.add(wordPlusPOS[1]);
+			                actualSentence += wordPlusPOS[0] + " ";
 							}
 					}
+					cleanedSentences.add(actualSentence);	
 				}
-//				
-//				Sentence s = new Sentence(jcas, 0, 100);
-//				s.addToIndexes();
+
+				jcas.setDocumentText(documentText);
+
+				int sentenceBeginn = 0;
+				int sentenceEnd = 0;
 				
-				jcas.setDocumentText(documentText.trim());
-                DocumentMetaData test = null;
-                test.setDocumentId("test");
-                test.setDocumentUri("TEST");
-                test.setLanguage("is");
-                test.addToIndexes();
-                System.out.println(test.getCoveredText());
-				//System.out.println(jcas.getDocumentText());
-			
+				for(String sentance : cleanedSentences){
+					sentenceEnd += sentance.length();
+					Sentence s = new Sentence(jcas, sentenceBeginn, sentenceEnd);
+					sentenceBeginn += sentance.length();
+					s.addToIndexes();
+				}
+				
+				int wordBeginn = 0;
+				int wordEnd = 0;
+				int posCount = 0;
+				
+		        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
+		        	String[] splittedWords = se.getCoveredText().split("\\s");
+		        	System.out.println(se.getCoveredText());
+		        	
+		        	for(String split : splittedWords){
+//		        		System.out.println(split);
+		        		wordEnd += split.length();
+		        		Token token = new Token(jcas, wordBeginn, wordEnd);
+		        		wordBeginn += split.length()+1;
+		        		wordEnd++;
+		        		token.addToIndexes();
+		        		
+//		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
+		        		
+		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
+		                unit.setSuffix(token.getCoveredText());
+		                unit.addToIndexes();
+		                
+		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
+		                outcome.setOutcome(allPos.get(posCount));
+//		                System.out.println(outcome.getOutcome());
+		                outcome.addToIndexes();
+		                
+		        		posCount++;
+		        	}
+		        }    
 		}catch (Exception e){
 			e.printStackTrace();
 		}
