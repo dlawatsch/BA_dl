@@ -82,6 +82,8 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 				documentText += sentence;
 			}
 			
+			annotationProcess(jcas);
+			System.out.println();
 			System.out.println(documentText);
 			
 		}catch (Exception e){
@@ -90,8 +92,6 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 	}
 
 	private String buildSentences(Node sentence) {
-		
-		Token t;
 		//getting all segments of a single sentence
 		NodeList allNodesFromCurrentSentenceNodes = sentence.getChildNodes();
 		String cleanedSentence = "";
@@ -165,6 +165,24 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		Attr attrName = element.getAttributeNode(attributename);
 		String attribute = attrName.getTextContent();
 		return attribute;
+	}
+	
+	private void annotationProcess(JCas jcas) {
+		jcas.setDocumentText(documentText);
+		
+		String[] posArray = new String[allPOS.size()];
+		allPOS.toArray(posArray);
+		
+		for(String s : posArray){
+			System.out.print(s + " ");
+		}
+		
+		String[] lemmaArray = new String[allLemma.size()];
+		allLemma.toArray(lemmaArray);
+		for(String x : lemmaArray){
+			System.out.print(x + " ");
+		}
+		
 	}
 
 }
