@@ -92,7 +92,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				String documentText = "";
 				List<String> cleanedSentences = new ArrayList<String>();
 				List<String> allPos = new ArrayList<String>();
-				
+				int breaker = 0;
 				for(String sentenceB : sentences){
 					String[] parts = sentenceB.split("\n");
 					String actualSentence = "";
@@ -106,6 +106,10 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 							}
 					}
 					cleanedSentences.add(actualSentence);	
+					if(breaker == 3){
+						break;
+					}
+					breaker++;
 				}
 
 				jcas.setDocumentText(documentText);
@@ -125,6 +129,9 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				int posCount = 0;
 				
 		        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
+		            TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
+		            sequence.addToIndexes();
+		        	
 		        	String[] splittedWords = se.getCoveredText().split("\\s");
 		        	System.out.println(se.getCoveredText());
 		        	
@@ -141,7 +148,9 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
 		                unit.setSuffix(token.getCoveredText());
 		                unit.addToIndexes();
-		                
+				        POS test = new POS(jcas);
+				        test.setPosValue(allPos.get(posCount));
+				        token.setPos(test);
 		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
 		                outcome.setOutcome(allPos.get(posCount));
 //		                System.out.println(outcome.getOutcome());

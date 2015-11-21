@@ -33,5 +33,15 @@
 			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="/de.tudarmstadt.ukp.dkpro.core.io.tei-asl"/>
+	<classpathentry kind="lib" path="/home/dominik/.m2/repository/de/tudarmstadt/ukp/dkpro/core/de.tudarmstadt.ukp.dkpro.core.io.tei-asl/1.7.0/de.tudarmstadt.ukp.dkpro.core.io.tei-asl-1.7.0.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="de.tudarmstadt.ukp.dkpro.core"/>
+			<attribute name="maven.artifactId" value="de.tudarmstadt.ukp.dkpro.core.io.tei-asl"/>
+			<attribute name="maven.version" value="1.7.0"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
