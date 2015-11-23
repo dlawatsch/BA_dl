@@ -141,19 +141,20 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		        		Token token = new Token(jcas, wordBeginn, wordEnd);
 		        		wordBeginn += split.length()+1;
 		        		wordEnd++;
-		        		token.addToIndexes();
+		        		
 		        		
 //		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
 		        		
 		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
 		                unit.setSuffix(token.getCoveredText());
 		                unit.addToIndexes();
-				        POS test = new POS(jcas);
-				        test.setPosValue(allPos.get(posCount));
-				        token.setPos(test);
+				        POS pos = new POS(jcas);
+				        pos.setPosValue(allPos.get(posCount));
+				        pos.addToIndexes();
+				        token.setPos(pos);
+				        token.addToIndexes();
 		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
 		                outcome.setOutcome(allPos.get(posCount));
-//		                System.out.println(outcome.getOutcome());
 		                outcome.addToIndexes();
 		                
 		        		posCount++;

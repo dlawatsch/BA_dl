@@ -7,9 +7,9 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.poi.util.SystemOutLogger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.collection.CollectionException;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
@@ -21,9 +21,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
-import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resource;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
 public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
     //to determine the amount of all documents some variables are needed here
@@ -72,6 +77,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 			
         	DocumentMetaData meta = DocumentMetaData.create(jcas);
         	meta.setDocumentId(nextFile.getLocation());
+        	jcas.setDocumentLanguage("pl");
 			rootElement = document.getDocumentElement();
 
 	        //getting all sentences
@@ -80,11 +86,8 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 				String sentence = buildSentences(sentencesContainer.item(i));
 				allSentences.add(sentence);
 				documentText += sentence;
-			}
-			
+			}			
 			annotationProcess(jcas);
-			System.out.println();
-			System.out.println(documentText);
 			
 		}catch (Exception e){
 			e.printStackTrace();
@@ -112,7 +115,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 					for(int z = 0; z < currentWordNodeList.getLength(); z++){
 						Node c = currentWordNodeList.item(z);
 						
-						//got problems with casting to element. workaround: 
+						//had problems with casting to Element type. workaround: 
 						//http://stackoverflow.com/questions/21170909/error-org-apache-xerces-dom-deferredtextimpl-cannot-be-cast-to-org-w3c-dom-elem
 						if(currentWordNodeList.item(z).getNodeType() == Node.ELEMENT_NODE){
 							NodeList annotation = c.getChildNodes();
@@ -163,26 +166,53 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 	private String getAttributeString(Node item, String attributename) {
 		Element element = (Element) item;
 		Attr attrName = element.getAttributeNode(attributename);
-		String attribute = attrName.getTextContent();
-		return attribute;
+		return attrName.getTextContent();
 	}
 	
 	private void annotationProcess(JCas jcas) {
 		jcas.setDocumentText(documentText);
+		System.out.println(documentText);
+		int sentenceBeginn = 0;
+		int sentenceEnd = 0;
 		
-		String[] posArray = new String[allPOS.size()];
-		allPOS.toArray(posArray);
-		
-		for(String s : posArray){
-			System.out.print(s + " ");
+		for(String sentance : allSentences){
+			sentenceEnd += sentance.length();
+			Sentence s = new Sentence(jcas, sentenceBeginn, sentenceEnd);
+			sentenceBeginn += sentance.length();
+			s.addToIndexes();
 		}
-		
-		String[] lemmaArray = new String[allLemma.size()];
-		allLemma.toArray(lemmaArray);
-		for(String x : lemmaArray){
-			System.out.print(x + " ");
-		}
-		
-	}
 
+		int wordBeginn = 0;
+		int wordEnd = 0;
+		int posCount = 0;
+		
+        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
+        	TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
+            sequence.addToIndexes();            
+        }
+        	
+        	for(String word : allWords){
+        		wordEnd += word.length();
+        		Token token = new Token(jcas, wordBeginn, wordEnd);
+        		wordBeginn += word.length()+1;
+        		wordEnd++;        		        		    		
+        		
+                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
+                unit.setSuffix(token.getCoveredText());
+                unit.addToIndexes();
+                Lemma lemma = new Lemma(jcas);
+                lemma.setValue(allLemma.get(posCount));
+                lemma.addToIndexes();
+		        POS pos = new POS(jcas);
+		        pos.setPosValue(allPOS.get(posCount));
+		        pos.addToIndexes();
+		        token.setPos(pos);
+		        token.setLemma(lemma);
+		        token.addToIndexes();  
+                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
+                outcome.setOutcome(pos.getCoveredText());
+                outcome.addToIndexes();              
+        		posCount++;               
+            }   
+	}
 }
