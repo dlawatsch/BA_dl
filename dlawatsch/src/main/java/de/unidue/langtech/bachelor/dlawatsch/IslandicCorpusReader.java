@@ -154,7 +154,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				        token.setPos(pos);
 				        token.addToIndexes();
 		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-		                outcome.setOutcome(allPos.get(posCount));
+		                outcome.setOutcome(pos.getPosValue());
 		                outcome.addToIndexes();
 		                
 		        		posCount++;

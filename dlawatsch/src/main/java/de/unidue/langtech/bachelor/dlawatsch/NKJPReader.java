@@ -193,7 +193,6 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
             while(wordEnd < se.getEnd()){
             	
             	String word = allWords.get(posCount);
-            	System.out.println(posCount);
         	
         		wordEnd += word.length();
         		Token token = new Token(jcas, wordBeginn, wordEnd);
@@ -218,7 +217,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		        
 		        
                 TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-                outcome.setOutcome(pos.getCoveredText());
+                outcome.setOutcome(pos.getPosValue());
                 outcome.addToIndexes();   
                 
         		posCount++;             		
