@@ -131,7 +131,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
 		            TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
 		            sequence.addToIndexes();
-		        	
+		            
 		        	String[] splittedWords = se.getCoveredText().split("\\s");
 		        	System.out.println(se.getCoveredText());
 		        	

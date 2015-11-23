@@ -188,10 +188,13 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		
         for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
         	TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
-            sequence.addToIndexes();            
-        }
+            sequence.addToIndexes();  
+            
+            while(wordEnd < se.getEnd()){
+            	
+            	String word = allWords.get(posCount);
+            	System.out.println(posCount);
         	
-        	for(String word : allWords){
         		wordEnd += word.length();
         		Token token = new Token(jcas, wordBeginn, wordEnd);
         		wordBeginn += word.length()+1;
@@ -200,19 +203,26 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
                 TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
                 unit.setSuffix(token.getCoveredText());
                 unit.addToIndexes();
+                
                 Lemma lemma = new Lemma(jcas);
                 lemma.setValue(allLemma.get(posCount));
                 lemma.addToIndexes();
+                
 		        POS pos = new POS(jcas);
 		        pos.setPosValue(allPOS.get(posCount));
 		        pos.addToIndexes();
+		        
 		        token.setPos(pos);
 		        token.setLemma(lemma);
 		        token.addToIndexes();  
+		        
+		        
                 TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
                 outcome.setOutcome(pos.getCoveredText());
-                outcome.addToIndexes();              
-        		posCount++;               
-            }   
+                outcome.addToIndexes();   
+                
+        		posCount++;             		
+            }  
+        }
 	}
 }
