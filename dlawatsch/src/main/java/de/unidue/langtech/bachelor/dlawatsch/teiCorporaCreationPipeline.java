@@ -11,9 +11,9 @@ import org.apache.uima.fit.pipeline.SimplePipeline;
 	        {
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
-	                            NKJPReader.class,
-	                            NKJPReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/pltest/",
-	                            NKJPReader.PARAM_PATTERNS, "*.xml"
+	                            BNCReader.class,
+	                            BNCReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/BNC/2554/download/Texts/A/A0",
+	                            BNCReader.PARAM_PATTERNS, "A00.xml"
 	                    ),
 
 	                     AnalysisEngineFactory.createEngineDescription(TestEval.class));

@@ -14,9 +14,9 @@ import de.unidue.langtech.bachelor.dlawatsch.IslandicCorpusReader;
 	        {
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
-	                            IslandicCorpusReader.class,
-	                            IslandicCorpusReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/ICELANDIC_GOLD/MIM-GOLD_0.9/",
-	                            IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
+	                            LatinReader.class,
+	                            LatinReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA",
+	                            LatinReader.PARAM_PATTERNS, "latin.txt"
 	                    ),
 
 	                     AnalysisEngineFactory.createEngineDescription(TestEval.class));
