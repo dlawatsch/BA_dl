@@ -75,7 +75,8 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
     public void getNext(JCas jcas)
         throws IOException, CollectionException
     {
-		Resource nextFile = nextFile();
+    	hasNext();
+    	Resource nextFile = nextFile();
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
 		System.out.println(nextFile.getLocation());
 		String sentence = "";
@@ -95,7 +96,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				List<String> cleanedSentences = new ArrayList<String>();
 				List<String> allPos = new ArrayList<String>();
 				List<String> allWords = new ArrayList<String>();
-//				int breaker = 0;
+				int breaker = 0;
 				for(String sentenceB : sentences){
 					String[] parts = sentenceB.split("\n");
 					String actualSentence = "";
@@ -110,14 +111,13 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 							}
 					}
 					cleanedSentences.add(actualSentence);	
-//					if(breaker == 3){
-//						break;
-//					}
-//					breaker++;
+					if(breaker == 3){
+						break;
+					}
+					breaker++;
 				}
 
 				jcas.setDocumentText(documentText);
-
 				int sentenceBeginn = 0;
 				int sentenceEnd = 0;
 				
@@ -166,6 +166,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		            }  
 
 		        }   
+
 	        	jcas.setDocumentLanguage("is");
 	        	DocumentMetaData meta = DocumentMetaData.create(jcas);
 	        	meta.setDocumentId(nextFile.getLocation());

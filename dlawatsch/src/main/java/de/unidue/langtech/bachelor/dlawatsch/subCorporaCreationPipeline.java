@@ -6,7 +6,6 @@ import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 
-import de.unidue.langtech.bachelor.dlawatsch.IslandicCorpusReader;
 
 	public class subCorporaCreationPipeline {
 	    public static void main(String[] args)
@@ -14,9 +13,9 @@ import de.unidue.langtech.bachelor.dlawatsch.IslandicCorpusReader;
 	        {
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
-	                            LatinReader.class,
-	                            LatinReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA",
-	                            LatinReader.PARAM_PATTERNS, "latin.txt"
+	                            IslandicCorpusReader.class,
+	                            IslandicCorpusReader.PARAM_SOURCE_LOCATION, "/home/dominikl/Dokumente/BA/CORPORA/ICELANDIC_GOLD/MIM-GOLD_0.9/",
+	                            IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
 	                    ),
 
 	                     AnalysisEngineFactory.createEngineDescription(TestEval.class));

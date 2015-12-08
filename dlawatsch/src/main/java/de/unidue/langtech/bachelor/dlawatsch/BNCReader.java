@@ -155,7 +155,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 	
 	private void annotationProcess(JCas jcas) {
 		jcas.setDocumentText(documentText);
-		System.out.println(documentText);
+		//System.out.println(documentText);
 		int sentenceBeginn = 0;
 		int sentenceEnd = 0;
 		
@@ -198,7 +198,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		        token.setPos(pos);
 		        token.setLemma(lemma);
 		        token.addToIndexes();  
-		        System.out.println(token.getCoveredText() + " /" + token.getPos().getPosValue() + " /" + token.getLemma().getValue());
+		      //  System.out.println(token.getCoveredText() + " /" + token.getPos().getPosValue() + " /" + token.getLemma().getValue());
 		        
                 TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
                 outcome.setOutcome(pos.getPosValue());
