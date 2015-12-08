@@ -24,6 +24,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resourc
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.resources.ResourceUtils;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
@@ -36,6 +37,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
     /**
      * Input file
      */
+
     private String currentSentence;
     private int sentenceCount;
     static int currentDocument;
@@ -75,7 +77,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
     {
 		Resource nextFile = nextFile();
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
-//		System.out.println(nextFile.getLocation());
+		System.out.println(nextFile.getLocation());
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();
         
@@ -92,7 +94,8 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				String documentText = "";
 				List<String> cleanedSentences = new ArrayList<String>();
 				List<String> allPos = new ArrayList<String>();
-				int breaker = 0;
+				List<String> allWords = new ArrayList<String>();
+//				int breaker = 0;
 				for(String sentenceB : sentences){
 					String[] parts = sentenceB.split("\n");
 					String actualSentence = "";
@@ -101,15 +104,16 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 						String[] wordPlusPOS = part.split("\t");
 							if(wordPlusPOS.length == 2){
 			                documentText += wordPlusPOS[0] + " ";
+			                allWords.add(wordPlusPOS[0]);
 			                allPos.add(wordPlusPOS[1]);
 			                actualSentence += wordPlusPOS[0] + " ";
 							}
 					}
 					cleanedSentences.add(actualSentence);	
-					if(breaker == 3){
-						break;
-					}
-					breaker++;
+//					if(breaker == 3){
+//						break;
+//					}
+//					breaker++;
 				}
 
 				jcas.setDocumentText(documentText);
@@ -132,33 +136,34 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		            TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
 		            sequence.addToIndexes();
 		            
-		        	String[] splittedWords = se.getCoveredText().split("\\s");
-		        	System.out.println(se.getCoveredText());
+		            while(wordEnd < se.getEnd()){
+		            	
+		            	String word = allWords.get(posCount);
 		        	
-		        	for(String split : splittedWords){
-//		        		System.out.println(split);
-		        		wordEnd += split.length();
+		        		wordEnd += word.length();
 		        		Token token = new Token(jcas, wordBeginn, wordEnd);
-		        		wordBeginn += split.length()+1;
-		        		wordEnd++;
-		        		
-		        		
-//		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
+		        		wordBeginn += word.length()+1;
+		        		wordEnd++;        		        		    		
 		        		
 		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
 		                unit.setSuffix(token.getCoveredText());
 		                unit.addToIndexes();
+		                
+		                
 				        POS pos = new POS(jcas);
 				        pos.setPosValue(allPos.get(posCount));
 				        pos.addToIndexes();
+				        
 				        token.setPos(pos);
-				        token.addToIndexes();
+				        token.addToIndexes();  
+				        
+				        
 		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
 		                outcome.setOutcome(pos.getPosValue());
-		                outcome.addToIndexes();
-		                
-		        		posCount++;
-		        	}
+		                outcome.addToIndexes();   
+//		                System.out.println(token.getCoveredText() + " " + token.getPos().getPosValue());
+		        		posCount++;             		
+		            }  
 
 		        }   
 	        	jcas.setDocumentLanguage("is");
