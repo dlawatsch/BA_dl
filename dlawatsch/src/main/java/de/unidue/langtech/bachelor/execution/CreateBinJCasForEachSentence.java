@@ -19,7 +19,7 @@ public class CreateBinJCasForEachSentence {
 	public static void main(String[] args) throws ResourceInitializationException, UIMAException, IOException {
 		
 		/*Please provide the location of the extracted 
-		 * "CORPORA" folder
+		 * "CORPORA" folder (like "/home/dominik/Dokumente/BA/CORPORA/")
 		 * which can be found on the CD  
 		 */
 		String corpusLocation = "/home/dominik/Dokumente/BA/CORPORA/";
