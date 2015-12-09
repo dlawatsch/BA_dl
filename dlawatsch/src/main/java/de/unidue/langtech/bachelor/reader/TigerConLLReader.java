@@ -1,4 +1,4 @@
-package de.unidue.langtech.bachelor.dlawatsch;
+package de.unidue.langtech.bachelor.reader;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +32,11 @@ import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
 
-public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
+public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 		{
     /**
      * Input file
      */
-
     private String currentSentence;
     private int sentenceCount;
     static int currentDocument;
@@ -75,16 +74,16 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
     public void getNext(JCas jcas)
         throws IOException, CollectionException
     {
-    	hasNext();
-    	Resource nextFile = nextFile();
+		Resource nextFile = nextFile();
+		System.out.println("READING LINES");
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
-		System.out.println(nextFile.getLocation());
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();
+        System.out.println("FINISHED READING LINES");
         
 		try{
 				for(String line : lines){
-					if(line.startsWith("\t")){
+					if(line.isEmpty()){
 						sentences.add(sentence);
 						sentence = "";
 						continue;
@@ -95,7 +94,8 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				String documentText = "";
 				List<String> cleanedSentences = new ArrayList<String>();
 				List<String> allPos = new ArrayList<String>();
-				List<String> allWords = new ArrayList<String>();
+				List<String> allLemma = new ArrayList<String>();
+				
 				int breaker = 0;
 				for(String sentenceB : sentences){
 					String[] parts = sentenceB.split("\n");
@@ -103,21 +103,22 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 					
 					for(String part : parts){
 						String[] wordPlusPOS = part.split("\t");
-							if(wordPlusPOS.length == 2){
-			                documentText += wordPlusPOS[0] + " ";
-			                allWords.add(wordPlusPOS[0]);
-			                allPos.add(wordPlusPOS[1]);
-			                actualSentence += wordPlusPOS[0] + " ";
+							if(wordPlusPOS.length > 3){
+			                documentText += wordPlusPOS[1] + " ";
+			                allLemma.add(wordPlusPOS[2]);
+			                allPos.add(wordPlusPOS[4]);
+			                actualSentence += wordPlusPOS[1] + " ";
 							}
 					}
 					cleanedSentences.add(actualSentence);	
-					if(breaker == 3){
+					if(breaker == 10){
 						break;
 					}
 					breaker++;
 				}
 
 				jcas.setDocumentText(documentText);
+
 				int sentenceBeginn = 0;
 				int sentenceEnd = 0;
 				
@@ -136,38 +137,43 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		            TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
 		            sequence.addToIndexes();
 		            
-		            while(wordEnd < se.getEnd()){
-		            	
-		            	String word = allWords.get(posCount);
+		        	String[] splittedWords = se.getCoveredText().split("\\s");
+		        	System.out.println(se.getCoveredText());
 		        	
-		        		wordEnd += word.length();
+		        	for(String split : splittedWords){
+		        		wordEnd += split.length();
 		        		Token token = new Token(jcas, wordBeginn, wordEnd);
-		        		wordBeginn += word.length()+1;
-		        		wordEnd++;        		        		    		
+		        		wordBeginn += split.length()+1;
+		        		wordEnd++;
+		        		
+		        		
+		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
 		        		
 		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
-		                unit.setSuffix(token.getCoveredText());
+		                unit.setSuffix(token.getCoveredText());		         
 		                unit.addToIndexes();
-		                
 		                
 				        POS pos = new POS(jcas);
 				        pos.setPosValue(allPos.get(posCount));
 				        pos.addToIndexes();
 				        
-				        token.setPos(pos);
-				        token.addToIndexes();  
+				        Lemma lemma = new Lemma(jcas);
+				        lemma.setValue(allLemma.get(posCount));
+				        lemma.addToIndexes();
 				        
+				        token.setPos(pos);
+				        token.setLemma(lemma);
+				        token.addToIndexes();
 				        
 		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
 		                outcome.setOutcome(pos.getPosValue());
-		                outcome.addToIndexes();   
-//		                System.out.println(token.getCoveredText() + " " + token.getPos().getPosValue());
-		        		posCount++;             		
-		            }  
+		                outcome.addToIndexes();
+		                
+		        		posCount++;
+		        	}
 
 		        }   
-
-	        	jcas.setDocumentLanguage("is");
+	        	jcas.setDocumentLanguage("ge");
 	        	DocumentMetaData meta = DocumentMetaData.create(jcas);
 	        	meta.setDocumentId(nextFile.getLocation());
 		}catch (Exception e){

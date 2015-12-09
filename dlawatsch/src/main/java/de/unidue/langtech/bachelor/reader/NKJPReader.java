@@ -1,4 +1,4 @@
-package de.unidue.langtech.bachelor.dlawatsch;
+package de.unidue.langtech.bachelor.reader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
-public class BNCReader extends JCasResourceCollectionReader_ImplBase{
+public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
     //to determine the amount of all documents some variables are needed here
     static int currentDocument;
 	static Element rootElement;
@@ -101,50 +101,66 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		
 		//iterates over all segments of a sentence
 		for(int i = 0; i < allNodesFromCurrentSentenceNodes.getLength(); i++){
-			Node current = allNodesFromCurrentSentenceNodes.item(i);
-			if(current.getNodeName().equals("hi")){
-				NodeList currentWordNodeList = current.getChildNodes();
+			
+			//each segment contains nodes with the word, lemma and POS but need to be iterated seperatly
+			NodeList sentenceSegmentNodes = allNodesFromCurrentSentenceNodes.item(i).getChildNodes();
+			for(int j = 0; j < sentenceSegmentNodes.getLength(); j++){
+				Node current = sentenceSegmentNodes.item(j);
+				
+				//actual words are nodes in "fs" xml types
+				if(current.getNodeName().equals("fs")){
+					NodeList currentWordNodeList = current.getChildNodes();
+															
+					//iterating over actual annotations
 					for(int z = 0; z < currentWordNodeList.getLength(); z++){
 						Node c = currentWordNodeList.item(z);
-						if(c.getNodeName().equals("w")){
-							String lemma = getAttributeString(c, "hw");
-							String pos = getAttributeString(c, "pos");
-							String word = c.getTextContent();
-							allWords.add(word);
-							allPOS.add(pos);
-							allLemma.add(lemma);
-							cleanedSentence += word;
+						
+						//had problems with casting to Element type. workaround: 
+						//http://stackoverflow.com/questions/21170909/error-org-apache-xerces-dom-deferredtextimpl-cannot-be-cast-to-org-w3c-dom-elem
+						if(currentWordNodeList.item(z).getNodeType() == Node.ELEMENT_NODE){
+							NodeList annotation = c.getChildNodes();
+							String attribute = getAttributeString(currentWordNodeList.item(z), "name");
+							
+							if(attribute.equals("orth")){
+								for(int o = 0; o < annotation.getLength(); o++){
+									if(testNodeString(annotation.item(o).getNodeName())){
+										String orthographic = annotation.item(o).getTextContent();	
+										allWords.add(orthographic);
+										cleanedSentence += orthographic + " ";
+									}
+								}
+							}
+							
+							if(attribute.equals("base")){
+								for(int o = 0; o < annotation.getLength(); o++){
+									if(testNodeString(annotation.item(o).getNodeName())){
+										String base = annotation.item(o).getTextContent();
+										allLemma.add(base);
+									}
+								}
+							}
+							
+							if(attribute.equals("ctag")){
+								for(int o = 0; o < annotation.getLength(); o++){
+									if(annotation.item(o).getNodeName().equals("symbol")){
+										String POS = getAttributeString ((Element) annotation.item(o), "value");
+										allPOS.add(POS);
+									}
+								}
+							}
 						}
-						else if(c.getNodeName().equals("c")){
-							String pos = getAttributeString(c, "c5");
-							String word = c.getTextContent();
-							allWords.add(word);
-							allPOS.add(pos);
-							allLemma.add(word);
-							cleanedSentence += word;
-						}
-					}
-				}	
-				//actual words are nodes in "fs" xml types
-				else if(current.getNodeName().equals("w")){
-					String lemma = getAttributeString(current, "hw");
-					String pos = getAttributeString(current, "pos");
-					String word = current.getTextContent();
-					allWords.add(word);
-					allPOS.add(pos);
-					allLemma.add(lemma);
-					cleanedSentence += word;
-				}
-				else if(current.getNodeName().equals("c")){
-					String pos = getAttributeString(current, "c5");
-					String word = current.getTextContent();
-					allWords.add(word);
-					allPOS.add(pos);
-					allLemma.add(word);
-					cleanedSentence += word;
+					}	
 				}
 			}
+		}
 		return cleanedSentence;
+	}
+	
+
+	private boolean testNodeString(String string) {
+		if(string.equals("string")){
+			return true;
+		}else return false;
 	}
 
 	private String getAttributeString(Node item, String attributename) {
@@ -155,7 +171,6 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 	
 	private void annotationProcess(JCas jcas) {
 		jcas.setDocumentText(documentText);
-		//System.out.println(documentText);
 		int sentenceBeginn = 0;
 		int sentenceEnd = 0;
 		
@@ -173,19 +188,19 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
         for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
         	TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
             sequence.addToIndexes();  
+            
             while(wordEnd < se.getEnd()){
             	
             	String word = allWords.get(posCount);
         	
         		wordEnd += word.length();
         		Token token = new Token(jcas, wordBeginn, wordEnd);
-        		wordBeginn += word.length();       		        		    		
+        		wordBeginn += word.length()+1;
+        		wordEnd++;        		        		    		
         		
                 TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
                 unit.setSuffix(token.getCoveredText());
                 unit.addToIndexes();
-                
-                
                 
                 Lemma lemma = new Lemma(jcas);
                 lemma.setValue(allLemma.get(posCount));
@@ -198,7 +213,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		        token.setPos(pos);
 		        token.setLemma(lemma);
 		        token.addToIndexes();  
-		      //  System.out.println(token.getCoveredText() + " /" + token.getPos().getPosValue() + " /" + token.getLemma().getValue());
+		        
 		        
                 TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
                 outcome.setOutcome(pos.getPosValue());

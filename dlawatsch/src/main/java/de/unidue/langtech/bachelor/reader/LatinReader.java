@@ -1,4 +1,4 @@
-package de.unidue.langtech.bachelor.dlawatsch;
+package de.unidue.langtech.bachelor.reader;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
 
-public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
+public class LatinReader extends JCasResourceCollectionReader_ImplBase
 		{
     /**
      * Input file
@@ -75,11 +75,10 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
         throws IOException, CollectionException
     {
 		Resource nextFile = nextFile();
-		System.out.println("READING LINES");
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();
-        System.out.println("FINISHED READING LINES");
+
         
 		try{
 				for(String line : lines){
@@ -106,7 +105,7 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 							if(wordPlusPOS.length > 3){
 			                documentText += wordPlusPOS[1] + " ";
 			                allLemma.add(wordPlusPOS[2]);
-			                allPos.add(wordPlusPOS[4]);
+			                allPos.add(wordPlusPOS[3]);
 			                actualSentence += wordPlusPOS[1] + " ";
 							}
 					}
@@ -173,7 +172,7 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 		        	}
 
 		        }   
-	        	jcas.setDocumentLanguage("is");
+	        	jcas.setDocumentLanguage("la");
 	        	DocumentMetaData meta = DocumentMetaData.create(jcas);
 	        	meta.setDocumentId(nextFile.getLocation());
 		}catch (Exception e){

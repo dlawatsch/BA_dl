@@ -13,6 +13,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase;
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
+import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
+import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
 
 public class BuildAllBinaryJCas{
 

@@ -6,6 +6,10 @@ import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 
+import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
+import de.unidue.langtech.bachelor.PipelineEngineFactories.WriteBinJcas;
+import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
+
 
 	public class subCorporaCreationPipeline {
 	    public static void main(String[] args)
@@ -14,10 +18,10 @@ import org.apache.uima.fit.pipeline.SimplePipeline;
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
 	                            IslandicCorpusReader.class,
-	                            IslandicCorpusReader.PARAM_SOURCE_LOCATION, "/home/dominikl/Dokumente/BA/CORPORA/ICELANDIC_GOLD/MIM-GOLD_0.9/",
-	                            IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
+	                            IslandicCorpusReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/ICELANDIC_GOLD/MIM-GOLD_0.9/",
+	                            IslandicCorpusReader.PARAM_PATTERNS, "adjucations.txt"
 	                    ),
 
-	                     AnalysisEngineFactory.createEngineDescription(TestEval.class));
+	                     AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class));
 	        }
 }
