@@ -46,12 +46,6 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
             dir.mkdir();
             
             file = new File(corpusLocation + language + "/SEQUENCES/" + "SEQUENCE_ID.txt");
-            try {
-				output = new BufferedWriter(new FileWriter(file));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
         }   
     
     
@@ -59,7 +53,13 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
-		
+        try {
+			output = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
 		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
 			int numberOfTokens = 0;
 			
@@ -79,6 +79,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 			sequenceIDcount++;									
 		}
 		try {
+			output.flush();
 			output.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -90,7 +91,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 
 	private void addToFile(String string) {
 		try {
-			System.out.println(string);			
+//			System.out.println(string);			
 			output.write(string);
 			output.write(System.getProperty("line.separator"));
 	        

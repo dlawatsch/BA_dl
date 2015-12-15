@@ -28,6 +28,7 @@ import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
+import de.unidue.langtech.bachelor.type.SequenceID;
 
 public class WriteBinJcas extends JCasAnnotator_ImplBase{
 
@@ -41,6 +42,14 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
+		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
+			
+			for (SequenceID sid : JCasUtil.selectCovered(jcas, SequenceID.class, s)){
+				System.out.println(sid.getID() + " " + sid.getNrOfTokens() + " " + sid.getBegin() + "-" + sid.getEnd());
+				System.out.println(s.getBegin() + "-" + s.getEnd());
+			}	
+			System.out.println("TEEEEEEEEEEEEST");
+		}
 		UUID uniqueID = UUID.randomUUID();
 		
     	DocumentMetaData meta = DocumentMetaData.get(jcas);
