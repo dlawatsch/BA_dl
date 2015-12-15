@@ -95,8 +95,9 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 				List<String> cleanedSentences = new ArrayList<String>();
 				List<String> allPos = new ArrayList<String>();
 				List<String> allLemma = new ArrayList<String>();
+				List<String> allWords = new ArrayList<String>();
 				
-				int breaker = 0;
+
 				for(String sentenceB : sentences){
 					String[] parts = sentenceB.split("\n");
 					String actualSentence = "";
@@ -105,16 +106,13 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 						String[] wordPlusPOS = part.split("\t");
 							if(wordPlusPOS.length > 3){
 			                documentText += wordPlusPOS[1] + " ";
+			                allWords.add(wordPlusPOS[1]);
 			                allLemma.add(wordPlusPOS[2]);
 			                allPos.add(wordPlusPOS[4]);
 			                actualSentence += wordPlusPOS[1] + " ";
 							}
 					}
 					cleanedSentences.add(actualSentence);	
-					if(breaker == 10){
-						break;
-					}
-					breaker++;
 				}
 
 				jcas.setDocumentText(documentText);
@@ -134,25 +132,18 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 				int posCount = 0;
 				
 		        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
-		            TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
-		            sequence.addToIndexes();
 		            
-		        	String[] splittedWords = se.getCoveredText().split("\\s");
-		        	System.out.println(se.getCoveredText());
+		            while(wordEnd < se.getEnd()){
+		            	
+		            	String word = allWords.get(posCount);
 		        	
-		        	for(String split : splittedWords){
-		        		wordEnd += split.length();
+		        		wordEnd += word.length();
 		        		Token token = new Token(jcas, wordBeginn, wordEnd);
-		        		wordBeginn += split.length()+1;
-		        		wordEnd++;
+		        		wordBeginn += word.length()+1;
+		        		wordEnd++;       
 		        		
+//		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
 		        		
-		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
-		        		
-		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
-		                unit.setSuffix(token.getCoveredText());		         
-		                unit.addToIndexes();
-		                
 				        POS pos = new POS(jcas);
 				        pos.setPosValue(allPos.get(posCount));
 				        pos.addToIndexes();
@@ -165,10 +156,6 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 				        token.setLemma(lemma);
 				        token.addToIndexes();
 				        
-		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-		                outcome.setOutcome(pos.getPosValue());
-		                outcome.addToIndexes();
-		                
 		        		posCount++;
 		        	}
 

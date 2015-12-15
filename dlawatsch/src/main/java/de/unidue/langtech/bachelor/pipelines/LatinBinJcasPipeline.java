@@ -8,8 +8,8 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import de.unidue.langtech.bachelor.Annotators.WriteBinJcas;
 import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
-import de.unidue.langtech.bachelor.PipelineEngineFactories.WriteBinJcas;
 import de.unidue.langtech.bachelor.reader.LatinReader;
 
 public class LatinBinJcasPipeline {

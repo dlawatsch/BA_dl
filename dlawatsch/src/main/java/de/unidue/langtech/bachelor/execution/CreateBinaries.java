@@ -15,7 +15,7 @@ import de.unidue.langtech.bachelor.pipelines.PolnishBinJcasPipeline;
  *  create Binary JCas for each sentence 
  *  for the chosen corpora below
  */
-public class CreateBinJCasForEachSentence {
+public class CreateBinaries {
 	public static void main(String[] args) throws ResourceInitializationException, UIMAException, IOException {
 		
 		/*Please provide the location of the extracted 
@@ -23,6 +23,7 @@ public class CreateBinJCasForEachSentence {
 		 * which can be found on the CD  
 		 */
 		String corpusLocation = "/home/dominik/Dokumente/BA/CORPORA/";
+		
 		
 		
 		/* Uncomment the Corpora you dont 

@@ -1,4 +1,4 @@
-package de.unidue.langtech.bachelor.PipelineEngineFactories;
+package de.unidue.langtech.bachelor.Annotators;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 
@@ -41,79 +41,23 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
-		for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
-			JCas out;
-			
+		UUID uniqueID = UUID.randomUUID();
+		
+    	DocumentMetaData meta = DocumentMetaData.get(jcas);
+    	meta.setDocumentId("FILE_" + String.valueOf(uniqueID));
 			try {
-				out = JCasFactory.createJCas();
-			
-		        out.setDocumentLanguage(jcas.getDocumentLanguage());
-		        out.setDocumentText(sentence.getCoveredText());
-
-		        DocumentMetaData meta = DocumentMetaData.create(out);
-		        
-		        UUID uniqueID = UUID.randomUUID();
-		        meta.setDocumentId("Sentence_ID_" + String.valueOf(uniqueID));
-		        
-		        Sentence sentenceout = new Sentence(out, 0, (sentence.getEnd() - sentence.getBegin()));
-		        
-		        sentenceout.addToIndexes(out);
-		        
-		        	
-				int wordBeginn = 0;
-				int wordEnd = 0;
-				
-				for(Sentence se : JCasUtil.select(out, Sentence.class)){
-		            TextClassificationSequence sequence = new TextClassificationSequence(out, se.getBegin(), se.getEnd());
-		            sequence.addToIndexes(out);
-	            	for (Token t : JCasUtil.selectCovered(jcas, Token.class, sentence)){
-	            		wordEnd += (t.getEnd() - t.getBegin());
-		        		Token token = new Token(out, wordBeginn, wordEnd);
-		        		wordBeginn += t.getCoveredText().length() + 1;
-		        		wordEnd++;        	
-		        		
-		                TextClassificationUnit unit = new TextClassificationUnit(out, token.getBegin(), token.getEnd());
-		                unit.setSuffix(t.getCoveredText());
-		                unit.addToIndexes();
-		                
-		                POS pos = new POS(out);
-		                pos.setPosValue(t.getPos().getPosValue());
-		                pos.addToIndexes(out);
-		                
-		                token.setPos(pos);
-		                if(t.getLemma() != null){
-		                	Lemma lemma = new Lemma(out);
-		                	lemma.setValue(t.getLemma().getValue());
-		                	lemma.addToIndexes(out);
-		                	token.setLemma(lemma);
-		                }
-
-		                token.addToIndexes(out);
-		                TextClassificationOutcome outcome = new TextClassificationOutcome(out, token.getBegin(), token.getEnd());
-		                outcome.setOutcome(token.getPos().getPosValue());
-		                outcome.addToIndexes(out);  
-	            	}
-				}
-				
-				
-				generateBinJCas(out);
-   		
-	            
-
-		   
-
-			} catch (UIMAException e) {
+				generateBinJCas(jcas);
+			} catch (ResourceInitializationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-		}		
+			}   			            		 				
 	}
 
 	private void generateBinJCas(JCas out) throws ResourceInitializationException, AnalysisEngineProcessException {
 	      AnalysisEngine writer = createEngine(
 	                BinaryCasWriter.class, 
 	                BinaryCasWriter.PARAM_FORMAT, "S", 
-	                BinaryCasWriter.PARAM_TARGET_LOCATION, corpusLocation + "BINARIES/" + language,
+	                BinaryCasWriter.PARAM_TARGET_LOCATION, corpusLocation + language + "/BINARIES/",
 	                BinaryCasWriter.PARAM_USE_DOCUMENT_ID, true,
 	                BinaryCasWriter.PARAM_TYPE_SYSTEM_LOCATION, 
 	                        true ? "typesystem.bin" : null);	      

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>SequenceID</name>
+  <description/>
+  <version>1.0</version>
+  <vendor/>
+  <types>
+    <typeDescription>
+      <name>de.unidue.langtech.bachelor.type.SequenceID</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>ID</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>NrOfTokens</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>Beginn</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>End</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
+</typeSystemDescription>

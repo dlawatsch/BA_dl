@@ -128,8 +128,6 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				int posCount = 0;
 				
 		        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
-		            TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
-		            sequence.addToIndexes();
 		            while(wordEnd < se.getEnd()){
 		            
 		            	String word = allWords.get(posCount);
@@ -137,11 +135,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		        		wordEnd += word.length();
 		        		Token token = new Token(jcas, wordBeginn, wordEnd);
 		        		wordBeginn += word.length()+1;
-		        		wordEnd++;        		        		    		
-		        		
-		                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
-		                unit.setSuffix(token.getCoveredText());
-		                unit.addToIndexes();
+		        		wordEnd++;        		        		    				        		
 		                
 		                
 				        POS pos = new POS(jcas);
@@ -151,10 +145,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				        token.setPos(pos);
 				        token.addToIndexes();  
 				        
-				        
-		                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-		                outcome.setOutcome(pos.getPosValue());
-		                outcome.addToIndexes();   
+				         
 //		                System.out.println(token.getCoveredText() + " " + token.getPos().getPosValue());
 		        		posCount++;             		
 		            }  

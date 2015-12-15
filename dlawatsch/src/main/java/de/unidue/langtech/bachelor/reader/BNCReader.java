@@ -171,21 +171,13 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		int posCount = 0;
 		
         for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
-        	TextClassificationSequence sequence = new TextClassificationSequence(jcas, se.getBegin(), se.getEnd());
-            sequence.addToIndexes();  
             while(wordEnd < se.getEnd()){
             	
             	String word = allWords.get(posCount);
         	
         		wordEnd += word.length();
         		Token token = new Token(jcas, wordBeginn, wordEnd);
-        		wordBeginn += word.length();       		        		    		
-        		
-                TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
-                unit.setSuffix(token.getCoveredText());
-                unit.addToIndexes();
-                
-                
+        		wordBeginn += word.length();       		        		    		        		                          
                 
                 Lemma lemma = new Lemma(jcas);
                 lemma.setValue(allLemma.get(posCount));
@@ -198,11 +190,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		        token.setPos(pos);
 		        token.setLemma(lemma);
 		        token.addToIndexes();  
-		      //  System.out.println(token.getCoveredText() + " /" + token.getPos().getPosValue() + " /" + token.getLemma().getValue());
-		        
-                TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-                outcome.setOutcome(pos.getPosValue());
-                outcome.addToIndexes();   
+		      //  System.out.println(token.getCoveredText() + " /" + token.getPos().getPosValue() + " /" + token.getLemma().getValue());	        
                 
         		posCount++;             		
             }  

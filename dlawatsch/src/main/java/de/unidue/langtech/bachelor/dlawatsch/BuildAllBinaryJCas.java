@@ -26,6 +26,6 @@ public class BuildAllBinaryJCas{
                         IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
                 ),
 
-                 AnalysisEngineFactory.createEngineDescription(TestEval.class));
+                 AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class));
 	}
 }

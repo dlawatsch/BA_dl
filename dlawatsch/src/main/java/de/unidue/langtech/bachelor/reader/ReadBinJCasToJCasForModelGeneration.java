@@ -20,9 +20,15 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
 import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resource;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
+import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
 public class ReadBinJCasToJCasForModelGeneration extends JCasResourceCollectionReader_ImplBase{
     public static final String PARAM_BIN_LOCATION = "PARAM_BIN_LOCATION";
@@ -73,13 +79,50 @@ public class ReadBinJCasToJCasForModelGeneration extends JCasResourceCollectionR
 			        BinaryCasReader.PARAM_PATTERNS, file.getPath(),
 			        BinaryCasReader.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin");
 	        JCas in = JCasFactory.createJCas();
-	        reader.getNext(in.getCas());
 	        
+	        reader.getNext(in.getCas());
+	        System.out.println(DocumentMetaData.get(in).getDocumentId());
+	        DocumentMetaData metaIn = DocumentMetaData.get(in);
+	        DocumentMetaData meta = DocumentMetaData.create(aJCas);
+	        meta.setDocumentId(metaIn.getDocumentId());
+	        in.
+			for(Sentence sentence : JCasUtil.select(in, Sentence.class)){
+	            TextClassificationSequence sequence = new TextClassificationSequence(in, sentence.getBegin(), sentence.getEnd());
+	            sequence.addToIndexes(aJCas);
+            	for (Token t : JCasUtil.selectCovered(jcas, Token.class, sentence)){
+            		wordEnd += (t.getEnd() - t.getBegin());
+	        		Token token = new Token(out, wordBeginn, wordEnd);
+	        		wordBeginn += t.getCoveredText().length() + 1;
+	        		wordEnd++;        	
+	        		
+	                TextClassificationUnit unit = new TextClassificationUnit(out, token.getBegin(), token.getEnd());
+	                unit.setSuffix(t.getCoveredText());
+	                unit.addToIndexes();
+	                
+	                POS pos = new POS(out);
+	                pos.setPosValue(t.getPos().getPosValue());
+	                pos.addToIndexes(out);
+	                
+	                token.setPos(pos);
+	                if(t.getLemma() != null){
+	                	Lemma lemma = new Lemma(out);
+	                	lemma.setValue(t.getLemma().getValue());
+	                	lemma.addToIndexes(out);
+	                	token.setLemma(lemma);
+	                }
+
+	                token.addToIndexes(out);
+	                TextClassificationOutcome outcome = new TextClassificationOutcome(out, token.getBegin(), token.getEnd());
+	                outcome.setOutcome(token.getPos().getPosValue());
+	                outcome.addToIndexes(out);  
+            	}
+			}
 	        for (Sentence sentence : JCasUtil.select(in, Sentence.class)) {
 	        	for (Token t : JCasUtil.selectCovered(in, Token.class, sentence)){
 	        		tokencount++;
 	        	}
 	        }
+	        aJCas = in;
 		} catch (UIMAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

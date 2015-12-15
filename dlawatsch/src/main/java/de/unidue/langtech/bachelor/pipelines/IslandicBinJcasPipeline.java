@@ -8,8 +8,9 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import de.unidue.langtech.bachelor.Annotators.SequenceIdAnnotator;
+import de.unidue.langtech.bachelor.Annotators.WriteBinJcas;
 import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
-import de.unidue.langtech.bachelor.PipelineEngineFactories.WriteBinJcas;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
 
 public class IslandicBinJcasPipeline {
@@ -20,8 +21,9 @@ public class IslandicBinJcasPipeline {
                         IslandicCorpusReader.PARAM_SOURCE_LOCATION, corpusLocation + "ICELANDIC_GOLD/MIM-GOLD_0.9/",
                         IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
                 ),
-
-                 AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "ISLANDIC", 
-						   WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
+                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
+                		SequenceIdAnnotator.PARAM_LANGUAGE, "ISLANDIC"),
+                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "ISLANDIC", 
+						WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 	}
 }
