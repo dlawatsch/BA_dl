@@ -41,11 +41,11 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
             throws ResourceInitializationException
         {
             super.initialize(context);          
-            sequenceIDcount = 0;
-            File dir = new File(corpusLocation + language + "/SEQUENCES/");
-            dir.mkdir();
+            sequenceIDcount = 0;	
+            File dir = new File(corpusLocation + "/LANGUAGES/" + language + "/SEQUENCES/");
+            dir.mkdirs();
             
-            file = new File(corpusLocation + language + "/SEQUENCES/" + "SEQUENCE_ID.txt");
+            file = new File(corpusLocation + "/LANGUAGES/" + language + "/SEQUENCES/" + "SEQUENCE_ID.txt");
         }   
     
     

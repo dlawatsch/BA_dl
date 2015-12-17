@@ -5,11 +5,7 @@ import java.io.IOException;
 import org.apache.uima.UIMAException;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import de.unidue.langtech.bachelor.pipelines.EnglishBinJcasPipeline;
-import de.unidue.langtech.bachelor.pipelines.GermanBinJcasPipeline;
-import de.unidue.langtech.bachelor.pipelines.IslandicBinJcasPipeline;
-import de.unidue.langtech.bachelor.pipelines.LatinBinJcasPipeline;
-import de.unidue.langtech.bachelor.pipelines.PolnishBinJcasPipeline;
+import de.unidue.langtech.bachelor.pipelines.CreateBinariesPipeline;
 
 /*	This class has to be executed first in order to 
  *  create Binary JCas for each sentence 
@@ -24,15 +20,16 @@ public class CreateBinaries {
 		 */
 		String corpusLocation = "/home/dominik/Dokumente/BA/CORPORA/";
 		
-		
-		
-		/* Uncomment the Corpora you dont 
-		 * wish to be processed to BinJcas'
+		/* Set the boolean of the languages to false 
+		 * if you dont wish those
+		 * corpora to be processed to Binaries
 		 */
-		IslandicBinJcasPipeline.writeSentencesToBinJCas(corpusLocation);
-//		EnglishBinJcasPipeline.writeSentencesToBinJCas(corpusLocation);
-//		GermanBinJcasPipeline.writeSentencesToBinJCas(corpusLocation);
-//		PolnishBinJcasPipeline.writeSentencesToBinJCas(corpusLocation);
-//		LatinBinJcasPipeline.writeSentencesToBinJCas(corpusLocation);			
+		boolean islandic = true;
+		boolean english = false;
+		boolean german = false;
+		boolean polnish = false;
+		boolean latin = false;
+		
+		CreateBinariesPipeline.writeToBinJCas(corpusLocation, islandic, english, german, polnish, latin);		
 	}
 }

@@ -42,14 +42,15 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
-		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
-			
-			for (SequenceID sid : JCasUtil.selectCovered(jcas, SequenceID.class, s)){
-				System.out.println(sid.getID() + " " + sid.getNrOfTokens() + " " + sid.getBegin() + "-" + sid.getEnd());
-				System.out.println(s.getBegin() + "-" + s.getEnd());
-			}	
-			System.out.println("TEEEEEEEEEEEEST");
-		}
+//		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
+//			
+//			for (SequenceID sid : JCasUtil.selectCovered(jcas, SequenceID.class, s)){
+//				System.out.println(sid.getID() + " " + sid.getNrOfTokens() + " " + sid.getBegin() + "-" + sid.getEnd());
+//				System.out.println(s.getBegin() + "-" + s.getEnd());
+//			}	
+//			System.out.println("TEEEEEEEEEEEEST");
+//		}
+		
 		UUID uniqueID = UUID.randomUUID();
 		
     	DocumentMetaData meta = DocumentMetaData.get(jcas);
@@ -66,7 +67,7 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	      AnalysisEngine writer = createEngine(
 	                BinaryCasWriter.class, 
 	                BinaryCasWriter.PARAM_FORMAT, "S", 
-	                BinaryCasWriter.PARAM_TARGET_LOCATION, corpusLocation + language + "/BINARIES/",
+	                BinaryCasWriter.PARAM_TARGET_LOCATION, corpusLocation + "/LANGUAGES/" + language + "/BINARIES/",
 	                BinaryCasWriter.PARAM_USE_DOCUMENT_ID, true,
 	                BinaryCasWriter.PARAM_TYPE_SYSTEM_LOCATION, 
 	                        true ? "typesystem.bin" : null);	      
