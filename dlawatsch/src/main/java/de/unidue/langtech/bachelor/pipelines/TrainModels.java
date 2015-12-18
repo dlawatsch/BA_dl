@@ -51,7 +51,7 @@ import de.tudarmstadt.ukp.dkpro.tc.ml.ExperimentCrossValidation;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
 import de.unidue.langtech.bachelor.reader.NKJPReader;
-import de.unidue.langtech.bachelor.reader.ReadBinJCasToJCasForModelGeneration;
+
 
 /**
  * 
