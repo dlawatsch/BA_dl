@@ -1,0 +1,21 @@
+1_1	Ich	x	_	1	_	case=nom|number=sg|gender=masc	_	3	_	NK	_	_	_	_
+1_2	bin	x	_	2	_	case=nom|number=sg|gender=masc|degree=pos	_	3	_	NK	_	_	_	_
+1_3	schon	x	_	3	_	case=nom|number=sg|gender=masc	_	6	_	SB	_	_	_	_
+1_4	viel	x	_	4	_	case=nom|number=sg|gender=masc	_	5	_	PNC	_	_	_	_
+1_5	um	x	_	5	_	case=nom|number=sg|gender=masc	_	3	_	NK	_	_	_	_
+1_6	die	x	_	6	_	number=sg|person=3|tense=pres|mood=ind	_	0	_	--	_	_	_	_
+1_7	Welt	x	_	7	_	case=acc|number=sg|gender=neut	_	9	_	NK	_	_	_	_
+1_8	gereist	x	_	8	_	case=acc|number=sg|gender=neut|degree=pos	_	9	_	NK	_	_	_	_
+1_9	.	x	_	9	_	_	_	6	_	--	_	_	_	_
+
+2_1	Yoda	x	_	10	_	_	_	3	_	MO	_	_	_	_
+2_2	würde	x	_	11	_	case=dat|number=pl|gender=fem	_	1	_	NK	_	_	_	_
+2_3	sagen	x	_	12	_	number=sg|person=3|tense=pres|mood=ind	_	0	_	--	_	_	_	_
+2_4	"	x	_	13	_	case=nom|number=sg|gender=masc	_	6	_	NK	_	_	_	_
+2_5	Schon	x	_	14	_	case=nom|number=sg|gender=masc|degree=pos	_	6	_	NK	_	_	_	_
+2_6	viel	x	_	15	_	_	_	3	_	SB	_	_	_	_
+2_7	gesehen	x	_	16	_	degree=pos	_	3	_	MO	_	_	_	_
+2_8	du	x	_	17	_	case=dat|number=sg|gender=neut	_	3	_	MO	_	_	_	_
+2_9	hast	x	_	18	_	case=dat|number=sg|gender=neut	_	8	_	NK	_	_	_	_
+2_10	"	x	_	19	_	_	_	9	_	OP	_	_	_	_
+

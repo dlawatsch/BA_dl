@@ -100,11 +100,12 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	
 	@Override
 	public void getNext(CAS cas) throws IOException, CollectionException {
-		super.getNext(cas);
+			super.getNext(cas);
 			try {
 				jcas = JCasFactory.createJCas();
 				jcas = cas.getJCas();
-
+				DocumentMetaData meta = DocumentMetaData.get(jcas);
+				System.out.println(meta.getDocumentId());
 				realtokens = 0;
 				
 		        for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
@@ -119,10 +120,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		        }
 
 		        if(realtokens == 0){
-		        	for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
-		        		addAnnotations(sentence);
-		        		break;
-		        	}
+		        	getNext(cas);	        	
 		        }
 		        System.out.println(realtokens);
 			} catch (UIMAException e) {

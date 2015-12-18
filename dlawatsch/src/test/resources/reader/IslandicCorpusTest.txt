@@ -1,0 +1,13 @@
+Dies	1
+ist	2
+ein	3
+Test	4
+:	5
+										
+Ich	6
+schreibe	7
+Bachelor	8
+Arbeit	9
+Junit	10
+Tests	11													
+				
