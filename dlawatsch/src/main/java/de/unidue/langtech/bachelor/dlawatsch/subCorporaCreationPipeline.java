@@ -12,6 +12,7 @@ import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
 import de.unidue.langtech.bachelor.reader.ReadBinJCasToJCasForModelGeneration;
+import de.unidue.langtech.bachelor.reader.SloveneReader;
 
 
 	public class subCorporaCreationPipeline {
@@ -20,13 +21,10 @@ import de.unidue.langtech.bachelor.reader.ReadBinJCasToJCasForModelGeneration;
 	        {
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
-	                    		BinaryReaderRandomization.class,
-	                    		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/LANGUAGES/ISLANDIC/BINARIES/",
-	                    		BinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
-	                    		BinaryReaderRandomization.PARAM_CORPUSLOCATION, "/home/dominik/Dokumente/BA/CORPORA/",
-	                    		BinaryReaderRandomization.PARAM_LANGUAGE, "ISLANDIC",
-	                    		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, "25000",
-	                    		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"
+	                    		SloveneReader.class,
+	                    		SloveneReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/SLOVENE-PARALLEL_IJS-ELAN/",
+	                    		SloveneReader.PARAM_PATTERNS, "*-sl.xml"
+
 	                    ),
 
 	                     AnalysisEngineFactory.createEngineDescription(TestEval.class));

@@ -24,12 +24,13 @@ public class CreateBinaries {
 		 * if you dont wish those
 		 * corpora to be processed to Binaries
 		 */
-		boolean islandic = true;
-		boolean english = false;
-		boolean german = false;
-		boolean polnish = false;
+		boolean islandic = false;
+		boolean english = true;
+		boolean german = true;
+		boolean polnish = true;
 		boolean latin = false;
+		boolean slovene = true;
 		
-		CreateBinariesPipeline.writeToBinJCas(corpusLocation, islandic, english, german, polnish, latin);		
+		CreateBinariesPipeline.writeToBinJCas(corpusLocation, islandic, english, german, polnish, latin, slovene);		
 	}
 }

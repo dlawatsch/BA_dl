@@ -26,11 +26,9 @@ import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
-public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
+
+public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
     //to determine the amount of all documents some variables are needed here
     static int currentDocument;
 	static Element rootElement;
@@ -67,7 +65,6 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		// TODO Auto-generated method stub
 		Resource nextFile = nextFile();
 		System.out.println(nextFile.getLocation());
-
 		currentFileName = nextFile;
 		
 		try {
@@ -79,7 +76,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 			
         	DocumentMetaData meta = DocumentMetaData.create(jcas);
         	meta.setDocumentId(nextFile.getLocation());
-        	jcas.setDocumentLanguage("pl");
+        	jcas.setDocumentLanguage("sl");
 			rootElement = document.getDocumentElement();
 
 	        //getting all sentences
@@ -103,66 +100,26 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		
 		//iterates over all segments of a sentence
 		for(int i = 0; i < allNodesFromCurrentSentenceNodes.getLength(); i++){
-			
-			//each segment contains nodes with the word, lemma and POS but need to be iterated seperatly
-			NodeList sentenceSegmentNodes = allNodesFromCurrentSentenceNodes.item(i).getChildNodes();
-			for(int j = 0; j < sentenceSegmentNodes.getLength(); j++){
-				Node current = sentenceSegmentNodes.item(j);
-				
-				//actual words are nodes in "fs" xml types
-				if(current.getNodeName().equals("fs")){
-					NodeList currentWordNodeList = current.getChildNodes();
-															
-					//iterating over actual annotations
-					for(int z = 0; z < currentWordNodeList.getLength(); z++){
-						Node c = currentWordNodeList.item(z);
-						
-						//had problems with casting to Element type. workaround: 
-						//http://stackoverflow.com/questions/21170909/error-org-apache-xerces-dom-deferredtextimpl-cannot-be-cast-to-org-w3c-dom-elem
-						if(currentWordNodeList.item(z).getNodeType() == Node.ELEMENT_NODE){
-							NodeList annotation = c.getChildNodes();
-							String attribute = getAttributeString(currentWordNodeList.item(z), "name");
-							
-							if(attribute.equals("orth")){
-								for(int o = 0; o < annotation.getLength(); o++){
-									if(testNodeString(annotation.item(o).getNodeName())){
-										String orthographic = annotation.item(o).getTextContent();	
-										allWords.add(orthographic);
-										cleanedSentence += orthographic + " ";
-									}
-								}
-							}
-							
-							if(attribute.equals("base")){
-								for(int o = 0; o < annotation.getLength(); o++){
-									if(testNodeString(annotation.item(o).getNodeName())){
-										String base = annotation.item(o).getTextContent();
-										allLemma.add(base);
-									}
-								}
-							}
-							
-							if(attribute.equals("ctag")){
-								for(int o = 0; o < annotation.getLength(); o++){
-									if(annotation.item(o).getNodeName().equals("symbol")){
-										String POS = getAttributeString ((Element) annotation.item(o), "value");
-										allPOS.add(POS);
-									}
-								}
-							}
-						}
-					}	
+			Node current = allNodesFromCurrentSentenceNodes.item(i);
+			if(current.getNodeName().equals("w")){
+					String lemma = getAttributeString(current, "lemma");
+					String pos = getAttributeString(current, "ana");
+					String word = current.getTextContent();
+					allWords.add(word);
+					allPOS.add(pos);
+					allLemma.add(lemma);
+					cleanedSentence += word + " ";
+				}
+				else if(current.getNodeName().equals("pc")){
+					String pos = getAttributeString(current, "ctag");
+					String word = current.getTextContent();
+					allWords.add(word);
+					allPOS.add(pos);
+					allLemma.add(word);
+					cleanedSentence += word + " ";
 				}
 			}
-		}
 		return cleanedSentence;
-	}
-	
-
-	private boolean testNodeString(String string) {
-		if(string.equals("string")){
-			return true;
-		}else return false;
 	}
 
 	private String getAttributeString(Node item, String attributename) {
@@ -173,6 +130,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 	
 	private void annotationProcess(JCas jcas) {
 		jcas.setDocumentText(documentText);
+		//System.out.println(documentText);
 		int sentenceBeginn = 0;
 		int sentenceEnd = 0;
 		
@@ -187,8 +145,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		int wordEnd = 0;
 		int posCount = 0;
 		
-        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) { 
-            
+        for (Sentence se : JCasUtil.select(jcas, Sentence.class)) {
             while(wordEnd < se.getEnd()){
             	
             	String word = allWords.get(posCount);
@@ -196,8 +153,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
         		wordEnd += word.length();
         		Token token = new Token(jcas, wordBeginn, wordEnd);
         		wordBeginn += word.length()+1;
-        		wordEnd++;        		        		    		
-        		
+        		wordEnd++;             		        		    		        		                          
                 
                 Lemma lemma = new Lemma(jcas);
                 lemma.setValue(allLemma.get(posCount));
@@ -209,11 +165,11 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		        
 		        token.setPos(pos);
 		        token.setLemma(lemma);
-		        token.addToIndexes();  
-		          
+		        token.addToIndexes();  	        
                 
-        		posCount++;             		
-            }  
+        		posCount++;                		
+            }
+
         }
 	}
 }

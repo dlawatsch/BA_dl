@@ -75,6 +75,8 @@ public class LatinReader extends JCasResourceCollectionReader_ImplBase
         throws IOException, CollectionException
     {
 		Resource nextFile = nextFile();
+		System.out.println(nextFile.getLocation());
+
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();

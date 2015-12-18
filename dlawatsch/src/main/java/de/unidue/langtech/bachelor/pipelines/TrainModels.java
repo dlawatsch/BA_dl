@@ -66,23 +66,79 @@ public class TrainModels implements Constants{
 	static String languageCode;
 	static int iteration;
 	static int i;
+	static String corpus;
+	static String modelOutputDir;
 	
 	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin){
-		i = 0;
-		
-		languageCode = "ISLANDIC";
-		homeFolder = corpusLocation + "BINARIES/ISLANDIC/";
-		String modelOutputFoldera = corpusLocation + "BINARIES/ISLANDIC/" + "MODELS";
-		iteration = 1;
+		if(islandic){
+			i = 0;
+			corpus = corpusLocation;
+			languageCode = "ISLANDIC";
+			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			iteration = 1;
 
-		for(;iteration <= 10; iteration++){
-			TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputFoldera, iteration);
+			for(;iteration <= 10; iteration++){
+				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+			}
+		}	
+		
+		if(english){
+			i = 0;
+			corpus = corpusLocation;
+			languageCode = "ENGLISH";
+			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			iteration = 1;
+
+			for(;iteration <= 10; iteration++){
+				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+			}	
+		}
+		
+		if(german){
+			i = 0;
+			corpus = corpusLocation;
+			languageCode = "GERMAN";
+			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			iteration = 1;
+
+			for(;iteration <= 10; iteration++){
+				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+			}	
+		}
+		
+		if(polnish){
+			i = 0;
+			corpus = corpusLocation;
+			languageCode = "POLNISH";
+			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			iteration = 1;
+
+			for(;iteration <= 10; iteration++){
+				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+			}	
+		}
+
+		if(latin){
+			i = 0;
+			corpus = corpusLocation;
+			languageCode = "LATIN";
+			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			iteration = 1;
+
+			for(;iteration <= 10; iteration++){
+				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+			}	
 		}
 
 	}
 	
 	
-	public static void TrainAndSaveCRF(String corpusLocation, String languageCode, String homeFolder, String modelOutputFoldera, int i){
+	public static void TrainAndSaveCRF(String corpusLocation, String languageCode, String homeFolder, String modelOutputFoldera, int i, String language){
 		i *= 10000;
 		System.out.println(i);
 		System.out.println(String.valueOf(i));
@@ -142,10 +198,10 @@ public class TrainModels implements Constants{
 
 		dimReaders.put(DIM_READER_TRAIN, BinaryReaderRandomization.class);
 		dimReaders.put(DIM_READER_TRAIN_PARAMS, Arrays.asList(
-        		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/LANGUAGES/ISLANDIC/BINARIES/",
+        		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, corpus + "/LANGUAGES/" + languageCode + "/BINARIES/",
         		BinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
-        		BinaryReaderRandomization.PARAM_CORPUSLOCATION, "/home/dominik/Dokumente/BA/CORPORA/",
-        		BinaryReaderRandomization.PARAM_LANGUAGE, "ISLANDIC",
+        		BinaryReaderRandomization.PARAM_CORPUSLOCATION, corpus,
+        		BinaryReaderRandomization.PARAM_LANGUAGE, languageCode,
         		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, String.valueOf(iteration * 10000) ,
         		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"));
 

@@ -75,11 +75,9 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
         throws IOException, CollectionException
     {
 		Resource nextFile = nextFile();
-		System.out.println("READING LINES");
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();
-        System.out.println("FINISHED READING LINES");
         
 		try{
 				for(String line : lines){

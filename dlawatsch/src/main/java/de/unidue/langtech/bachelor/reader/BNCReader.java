@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.fit.util.JCasUtil;
@@ -21,6 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
+import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resource;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
@@ -67,7 +69,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		// TODO Auto-generated method stub
 		Resource nextFile = nextFile();
 		currentFileName = nextFile;
-		
+		System.out.println(nextFile.getLocation());
 		try {
 			//A document builder is needed to process the XML/TML file
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -109,19 +111,19 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 						if(c.getNodeName().equals("w")){
 							String lemma = getAttributeString(c, "hw");
 							String pos = getAttributeString(c, "pos");
-							String word = c.getTextContent();
+							String word = c.getTextContent().trim();
 							allWords.add(word);
 							allPOS.add(pos);
 							allLemma.add(lemma);
-							cleanedSentence += word;
+							cleanedSentence += word  + " ";
 						}
 						else if(c.getNodeName().equals("c")){
 							String pos = getAttributeString(c, "c5");
-							String word = c.getTextContent();
+							String word = c.getTextContent().trim();
 							allWords.add(word);
 							allPOS.add(pos);
 							allLemma.add(word);
-							cleanedSentence += word;
+							cleanedSentence += word + " ";
 						}
 					}
 				}	
@@ -129,19 +131,19 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 				else if(current.getNodeName().equals("w")){
 					String lemma = getAttributeString(current, "hw");
 					String pos = getAttributeString(current, "pos");
-					String word = current.getTextContent();
+					String word = current.getTextContent().trim();
 					allWords.add(word);
 					allPOS.add(pos);
 					allLemma.add(lemma);
-					cleanedSentence += word;
+					cleanedSentence += word + " ";
 				}
 				else if(current.getNodeName().equals("c")){
 					String pos = getAttributeString(current, "c5");
-					String word = current.getTextContent();
+					String word = current.getTextContent().trim();
 					allWords.add(word);
 					allPOS.add(pos);
 					allLemma.add(word);
-					cleanedSentence += word;
+					cleanedSentence += word + " ";
 				}
 			}
 		return cleanedSentence;
@@ -177,7 +179,8 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
         	
         		wordEnd += word.length();
         		Token token = new Token(jcas, wordBeginn, wordEnd);
-        		wordBeginn += word.length();       		        		    		        		                          
+        		wordBeginn += word.length()+1;
+        		wordEnd++;       		        		    		        		                          
                 
                 Lemma lemma = new Lemma(jcas);
                 lemma.setValue(allLemma.get(posCount));
@@ -190,7 +193,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		        token.setPos(pos);
 		        token.setLemma(lemma);
 		        token.addToIndexes();  
-		      //  System.out.println(token.getCoveredText() + " /" + token.getPos().getPosValue() + " /" + token.getLemma().getValue());	        
+        
                 
         		posCount++;             		
             }  
