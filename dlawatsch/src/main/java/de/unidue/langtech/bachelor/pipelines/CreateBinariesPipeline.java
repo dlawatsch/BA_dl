@@ -8,6 +8,7 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import de.unidue.langtech.bachelor.Annotators.ExceedsUpperBoundChecker;
 import de.unidue.langtech.bachelor.Annotators.SequenceIdAnnotator;
 import de.unidue.langtech.bachelor.Annotators.WriteBinJcas;
 import de.unidue.langtech.bachelor.reader.BNCReader;
@@ -23,6 +24,7 @@ public class CreateBinariesPipeline {
 		
 		
 		if(islandic){
+			String language = "ISLANDIC";
 			SimplePipeline.runPipeline(
 	                CollectionReaderFactory.createReader(
 	                        IslandicCorpusReader.class,
@@ -30,12 +32,15 @@ public class CreateBinariesPipeline {
 	                        IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
 	                ),
 	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
-	                		SequenceIdAnnotator.PARAM_LANGUAGE, "ISLANDIC"),
-	                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "ISLANDIC", 
+	                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,
+	                		ExceedsUpperBoundChecker.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, language, 
 							WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 		}
 		
 		if(english){
+			String language = "ENGLISH";
 		SimplePipeline.runPipeline(
                 CollectionReaderFactory.createReader(
                         BNCReader.class,
@@ -43,12 +48,15 @@ public class CreateBinariesPipeline {
                         BNCReader.PARAM_PATTERNS, "*.xml"
                 ),
                 AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
-                		SequenceIdAnnotator.PARAM_LANGUAGE, "ENGLISH"),
-                 AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "ENGLISH", 
-						   WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
+                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
+                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,
+                		ExceedsUpperBoundChecker.PARAM_LANGUAGE, language),
+                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, language, 
+						WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 		}
 		
 		if(german){
+			String language = "GERMAN";
 			SimplePipeline.runPipeline(
 	                CollectionReaderFactory.createReader(
 	                        TigerConLLReader.class,
@@ -56,12 +64,15 @@ public class CreateBinariesPipeline {
 	                        TigerConLLReader.PARAM_PATTERNS, "*.conll09"
 	                ),
 	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
-	                		SequenceIdAnnotator.PARAM_LANGUAGE, "GERMAN"),
-	                 AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "GERMAN", 
-							   WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
+	                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,
+	                		ExceedsUpperBoundChecker.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, language, 
+							WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 		}
 		
 		if(polnish){
+			String language = "POLNISH";
 				SimplePipeline.runPipeline(
 		                CollectionReaderFactory.createReader(
 		                        NKJPReader.class,
@@ -69,12 +80,15 @@ public class CreateBinariesPipeline {
 		                        NKJPReader.PARAM_PATTERNS, "ann_words.xml"
 		                ),
 		                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
-		                		SequenceIdAnnotator.PARAM_LANGUAGE, "POLNISH"),
-		                 AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "POLNISH", 
-								   WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
+		                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
+		                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,
+		                		ExceedsUpperBoundChecker.PARAM_LANGUAGE, language),
+		                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, language, 
+								WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 		}
 		
 		if(latin){
+			String language = "LATIN";
 			SimplePipeline.runPipeline(
 	                CollectionReaderFactory.createReader(
 	                        LatinReader.class,
@@ -82,12 +96,15 @@ public class CreateBinariesPipeline {
 	                        LatinReader.PARAM_PATTERNS, "ann_words.xml"
 	                ),
 	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
-	                		SequenceIdAnnotator.PARAM_LANGUAGE, "LATIN"),
-	                 AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "LATIN", 
-							   WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
+	                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,
+	                		ExceedsUpperBoundChecker.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, language, 
+							WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 		}
 		
 		if(slovene){
+			String language = "SLOVENE";
 			SimplePipeline.runPipeline(
 	                CollectionReaderFactory.createReader(
                     		SloveneReader.class,
@@ -95,9 +112,11 @@ public class CreateBinariesPipeline {
                     		SloveneReader.PARAM_PATTERNS, "*-sl.xml"
 	                ),
 	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
-	                		SequenceIdAnnotator.PARAM_LANGUAGE, "SLOVENE"),
-	                 AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, "LATIN", 
-							   WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
+	                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,
+	                		ExceedsUpperBoundChecker.PARAM_LANGUAGE, language),
+	                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, language, 
+							WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 		}
 	}
 }

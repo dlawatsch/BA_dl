@@ -44,6 +44,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 	static Object[] allDocuments;
 	static Resource currentFileName;
 	private List<String> lines;
+	public static boolean reachedUpperBound;
     /*
      * initializes the reader
      */
@@ -54,6 +55,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
         super.initialize(context);
         allDocuments = getResources().toArray();
         currentDocument = 0;
+        reachedUpperBound = false;
     }
     
 	public Progress[] getProgress() {
@@ -64,7 +66,11 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
      * true, if there is a next document, false otherwise
      */
 	public boolean hasNext() throws IOException, CollectionException {
-		return super.hasNext() ;
+		if((currentDocument < allDocuments.length) && !reachedUpperBound){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 
@@ -157,5 +163,6 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		currentDocument++;
     }
 }

@@ -43,6 +43,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 	List<String> allLemma = new ArrayList<String>();
 	List<String> allPOS = new ArrayList<String>();
 	List<String> allSentences = new ArrayList<String>();
+	public static boolean reachedUpperBound;
 
     /*
      * initializes the reader
@@ -54,6 +55,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
             super.initialize(context);
             allDocuments = getResources().toArray();
             currentDocument = 0;
+            reachedUpperBound = false;
         }   
     
 	public Progress[] getProgress() {
@@ -61,7 +63,11 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 	}
 	
 	public boolean hasNext() throws IOException, CollectionException {
-		return super.hasNext() ;
+		if((currentDocument < allDocuments.length) && !reachedUpperBound){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	@Override
@@ -94,6 +100,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		currentDocument++;
 	}
 
 	private String buildSentences(Node sentence) {

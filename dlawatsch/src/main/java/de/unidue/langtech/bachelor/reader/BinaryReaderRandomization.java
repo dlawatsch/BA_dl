@@ -22,6 +22,7 @@ import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.w3c.dom.Element;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
@@ -46,6 +47,8 @@ public class BinaryReaderRandomization extends BinaryCasReader{
     @ConfigurationParameter(name = PARAM_USE_X_MAX_TOKEN, mandatory = true, defaultValue ="TEST")
     protected String maxToken;
     
+    static int currentDocument;
+	static Object[] allDocuments;
     Random randomGenerator;
 	List<String> allSequenceIDs = new ArrayList<String>();
 	int currentTokenCount;
@@ -57,7 +60,10 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	public void initialize(UimaContext context)
             throws ResourceInitializationException
         {
-            super.initialize(context);               
+            super.initialize(context);    
+            allDocuments = getResources().toArray();
+            currentDocument = 0;
+            
             randomGenerator = new Random();
             
             maximumToken = Integer.valueOf(maxToken);
@@ -95,8 +101,15 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 			}
 
 
-        }   
+        }  
 	
+	public boolean hasNext() throws IOException, CollectionException {
+		if((currentDocument < allDocuments.length)){
+			return true;
+		}else{
+			return false;
+		}
+	}
 	
 	@Override
 	public void getNext(CAS cas) throws IOException, CollectionException {
@@ -108,19 +121,28 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 				System.out.println(meta.getDocumentId());
 				realtokens = 0;
 				
+				Sentence minsentence = null;
+				int mintoken = Integer.MAX_VALUE;
+				
 		        for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
 		        	for (SequenceID sid : JCasUtil.selectCovering(jcas, SequenceID.class, sentence)){
+		        		if(sid.getNrOfTokens() < mintoken){
+		        			mintoken = sid.getNrOfTokens();
+		        			minsentence = sentence;
+		        		}
 		        		if(randomizedSID.contains(sid.getID())){
 		        			randomizedSID.remove(sid.getID());
 		        			System.out.println(sid.getID());
 		        			addAnnotations(sentence);
-
+		        			
 		        		}
 		        	}		        	
 		        }
-
-		        if(realtokens == 0){
+		        currentDocument++;
+		        if(realtokens == 0 && hasNext() == true){
 		        	getNext(cas);	        	
+		        }else if(realtokens == 0 && hasNext() == false){
+		        	addAnnotations(minsentence);	        	
 		        }
 		        System.out.println(realtokens);
 			} catch (UIMAException e) {

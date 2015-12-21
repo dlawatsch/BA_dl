@@ -21,9 +21,9 @@ import de.unidue.langtech.bachelor.reader.SloveneReader;
 	        {
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
-	                    		SloveneReader.class,
-	                    		SloveneReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/SLOVENE-PARALLEL_IJS-ELAN/",
-	                    		SloveneReader.PARAM_PATTERNS, "*-sl.xml"
+	                    		IslandicCorpusReader.class,
+	                    		IslandicCorpusReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/ICELANDIC_GOLD/MIM-GOLD_0.9",
+	                    		IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
 
 	                    ),
 
