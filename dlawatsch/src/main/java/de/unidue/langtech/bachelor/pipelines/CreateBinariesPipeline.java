@@ -60,7 +60,7 @@ public class CreateBinariesPipeline {
 			SimplePipeline.runPipeline(
 	                CollectionReaderFactory.createReader(
 	                        TigerConLLReader.class,
-	                        TigerConLLReader.PARAM_SOURCE_LOCATION, corpusLocation + "TIGER/",
+	                        TigerConLLReader.PARAM_SOURCE_LOCATION, corpusLocation + "Tiger/",
 	                        TigerConLLReader.PARAM_PATTERNS, "*.conll09"
 	                ),
 	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
@@ -92,8 +92,8 @@ public class CreateBinariesPipeline {
 			SimplePipeline.runPipeline(
 	                CollectionReaderFactory.createReader(
 	                        LatinReader.class,
-	                        LatinReader.PARAM_SOURCE_LOCATION, corpusLocation + "POLNISH-NATIONAL_NKJP-PodkorpusMilionowy-1.0/**/",
-	                        LatinReader.PARAM_PATTERNS, "ann_words.xml"
+	                        LatinReader.PARAM_SOURCE_LOCATION, corpusLocation + "LATIN/",
+	                        LatinReader.PARAM_PATTERNS, "*.txt"
 	                ),
 	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
 	                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
@@ -108,7 +108,7 @@ public class CreateBinariesPipeline {
 			SimplePipeline.runPipeline(
 	                CollectionReaderFactory.createReader(
                     		SloveneReader.class,
-                    		SloveneReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/SLOVENE-PARALLEL_IJS-ELAN/",
+                    		SloveneReader.PARAM_SOURCE_LOCATION, corpusLocation + "SLOVENE-PARALLEL_IJS-ELAN/",
                     		SloveneReader.PARAM_PATTERNS, "*-sl.xml"
 	                ),
 	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 

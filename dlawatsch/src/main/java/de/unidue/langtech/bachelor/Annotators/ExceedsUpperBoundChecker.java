@@ -51,12 +51,12 @@ public class ExceedsUpperBoundChecker extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
         
-		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
-        	for (SequenceID sid : JCasUtil.selectCovering(jcas, SequenceID.class, s)){
+        	for (SequenceID sid : JCasUtil.select(jcas, SequenceID.class)){
         		processedTokenCount += (sid.getNrOfTokens());
         	}
 			
         if(processedTokenCount >= upperBound){
+        	System.out.println("[UPPER BOUND EXCEEDED: "+ processedTokenCount + " Tokens annotated]");
         	if(language.equals("ISLANDIC")){
             	IslandicCorpusReader.reachedUpperBound = true;
         	}
@@ -72,7 +72,6 @@ public class ExceedsUpperBoundChecker extends JCasAnnotator_ImplBase{
         	if(language.equals("SLOVENE")){
             	SloveneReader.reachedUpperBound = true;
         	}
-        }
-		}
+        }		
 	}
 }

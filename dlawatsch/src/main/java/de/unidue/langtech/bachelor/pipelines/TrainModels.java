@@ -74,7 +74,7 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "ISLANDIC";
-			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			iteration = 1;
 
@@ -87,7 +87,7 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "ENGLISH";
-			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			iteration = 1;
 
@@ -100,7 +100,7 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "GERMAN";
-			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			iteration = 1;
 
@@ -113,7 +113,7 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "POLNISH";
-			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			iteration = 1;
 
@@ -126,7 +126,7 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "LATIN";
-			homeFolder = corpusLocation + "BINARIES/" + languageCode;
+			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
 			iteration = 1;
 
@@ -176,7 +176,6 @@ public class TrainModels implements Constants{
 						PreviousToken.class.getName(),
 						LuceneCharacterNGramUFE.class.getName(),
 						LuceneNGramUFE.class.getName(),
-						IsSurroundedByCharsUFE.class.getName(),
 						NrOfCharsUFE.class.getName()
 				}));
 
@@ -209,7 +208,10 @@ public class TrainModels implements Constants{
 				"readers", dimReaders), Dimension.create(DIM_LEARNING_MODE,
 				learningMode), Dimension.create(DIM_FEATURE_MODE, featureMode),
 				dimPipelineParameters, dimFeatureSets, dimClassificationArgs);
-
+		
+		ExperimentCrossValidation cv = new
+				ExperimentCrossValidation(experimentName ,CRFSuiteAdapter.class, 10 );
+		
 		return pSpace;
 	}
 
@@ -219,9 +221,7 @@ public class TrainModels implements Constants{
 		SaveModelCRFSuiteBatchTask batch = new SaveModelCRFSuiteBatchTask(
 				experimentName, modelOutputFolder, CRFSuiteAdapter.class,
 				getPreprocessing());
-		
-		ExperimentCrossValidation cv = new
-				ExperimentCrossValidation(experimentName ,CRFSuiteAdapter.class, 10 );
+
 
 		batch.setParameterSpace(pSpace);
 

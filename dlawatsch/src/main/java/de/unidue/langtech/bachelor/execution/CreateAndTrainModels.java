@@ -19,16 +19,16 @@ public class CreateAndTrainModels {
 		 * "CORPORA" folder (like "/home/dominik/Dokumente/BA/CORPORA/")
 		 * which can be found on the CD  
 		 */
-		String corpusLocation = "/home/dominik/Dokumente/BA/CORPORA/";
+		String corpusLocation = "/home/dominikl/Dokumente/BA/CORPORA/";
 		
 		/* Set the boolean of the languages to false 
 		 * if you dont wish those
 		 * corpora to be processed to Binaries
 		 */
 		boolean islandic = true;
-		boolean english = false;
+		boolean english = true;
 		boolean german = false;
-		boolean polnish = false;
+		boolean polnish = true;
 		boolean latin = false;
 		
 		TrainModels.process(corpusLocation, islandic, english, german, polnish, latin);		
