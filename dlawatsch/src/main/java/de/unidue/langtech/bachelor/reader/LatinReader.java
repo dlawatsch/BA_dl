@@ -110,11 +110,11 @@ public class LatinReader extends JCasResourceCollectionReader_ImplBase
 					
 					for(String part : parts){
 						String[] wordPlusPOS = part.split("\t");
-							if(wordPlusPOS.length > 3){
+							if(wordPlusPOS.length > 5){
 			                documentText += wordPlusPOS[1] + " ";
 			                allWords.add(wordPlusPOS[1]);
 			                allLemma.add(wordPlusPOS[2]);
-			                allPos.add(wordPlusPOS[3]);
+			                allPos.add(wordPlusPOS[wordPlusPOS.length-3]);
 			                actualSentence += wordPlusPOS[1] + " ";
 							}
 					}
