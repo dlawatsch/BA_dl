@@ -106,7 +106,13 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 			                documentText += wordPlusPOS[1] + " ";
 			                allWords.add(wordPlusPOS[1]);
 			                allLemma.add(wordPlusPOS[2]);
-			                allPos.add(wordPlusPOS[4]);
+			                if(wordPlusPOS[4].equals(",")){
+			                	allPos.add("Interp");
+			                }else if(wordPlusPOS[4].contains(",") && wordPlusPOS[4].length()>1){
+			                allPos.add(wordPlusPOS[4].replaceAll(",",""));
+			                }else{
+			                	allPos.add(wordPlusPOS[4]);
+			                }
 			                actualSentence += wordPlusPOS[1] + " ";
 							}
 					}

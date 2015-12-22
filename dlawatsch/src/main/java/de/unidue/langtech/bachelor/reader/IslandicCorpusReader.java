@@ -110,7 +110,13 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 							if(wordPlusPOS.length == 2){
 			                documentText += wordPlusPOS[0] + " ";
 			                allWords.add(wordPlusPOS[0]);
-			                allPos.add(wordPlusPOS[1]);
+			                if(wordPlusPOS[1].equals(",")){
+			                	allPos.add("Interp");
+			                }else if(wordPlusPOS[1].contains(",") && wordPlusPOS[1].length()>1){
+			                allPos.add(wordPlusPOS[1].replaceAll(",",""));
+			                }else{
+			                	allPos.add(wordPlusPOS[1]);
+			                }
 			                actualSentence += wordPlusPOS[0] + " ";
 							}
 					}

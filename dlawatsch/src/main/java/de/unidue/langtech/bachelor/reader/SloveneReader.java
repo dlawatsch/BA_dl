@@ -120,7 +120,13 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 					String pos = getAttributeString(current, "ctag");
 					String word = current.getTextContent();
 					allWords.add(word);
-					allPOS.add(pos);
+	                if(pos.equals(",")){
+	                	allPOS.add("Interp");
+	                }else if(pos.contains(",") && pos.length()>1){
+	                	allPOS.add(pos.replaceAll(",",""));
+	                }else{
+	                	allPOS.add(pos);
+	                }
 					allLemma.add(word);
 					cleanedSentence += word + " ";
 				}

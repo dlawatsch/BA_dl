@@ -147,10 +147,7 @@ public class LatinReader extends JCasResourceCollectionReader_ImplBase
 		        		wordEnd += word.length();
 		        		Token token = new Token(jcas, wordBeginn, wordEnd);
 		        		wordBeginn += word.length()+1;
-		        		wordEnd++;      
-		        		
-		        		
-		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
+		        		wordEnd++;      		        		
 
 		                
 				        POS pos = new POS(jcas);

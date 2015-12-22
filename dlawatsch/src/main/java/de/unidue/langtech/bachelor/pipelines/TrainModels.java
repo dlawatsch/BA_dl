@@ -34,10 +34,12 @@ import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
 import de.tudarmstadt.ukp.dkpro.core.io.tei.TeiReader;
 import de.tudarmstadt.ukp.dkpro.core.io.text.TextReader;
 import de.tudarmstadt.ukp.dkpro.lab.Lab;
+import de.tudarmstadt.ukp.dkpro.lab.task.BatchTask.ExecutionPolicy;
 import de.tudarmstadt.ukp.dkpro.lab.task.Dimension;
 import de.tudarmstadt.ukp.dkpro.lab.task.ParameterSpace;
 import de.tudarmstadt.ukp.dkpro.tc.core.Constants;
 import de.tudarmstadt.ukp.dkpro.tc.crfsuite.CRFSuiteAdapter;
+import de.tudarmstadt.ukp.dkpro.tc.crfsuite.CRFSuiteBatchCrossValidationReport;
 import de.tudarmstadt.ukp.dkpro.tc.crfsuite.task.serialization.SaveModelCRFSuiteBatchTask;
 import de.tudarmstadt.ukp.dkpro.tc.examples.io.BrownCorpusReader;
 import de.tudarmstadt.ukp.dkpro.tc.features.length.NrOfCharsUFE;
@@ -72,11 +74,12 @@ public class TrainModels implements Constants{
 	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin){
 		if(islandic){
 			i = 0;
+			iteration = 1;
 			corpus = corpusLocation;
 			languageCode = "ISLANDIC";
 			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			iteration = 1;
+			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
+
 
 			for(;iteration <= 10; iteration++){
 				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
@@ -153,7 +156,10 @@ public class TrainModels implements Constants{
 			pSpace = getParameterSpace(Constants.FM_SEQUENCE,
 					Constants.LM_SINGLE_LABEL);
 			TrainModels experiment = new TrainModels();
-			experiment.validation(pSpace);
+			if(iteration==10){
+				experiment.validation(pSpace);
+			}
+			experiment.runCrossValidation(pSpace);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -209,8 +215,7 @@ public class TrainModels implements Constants{
 				learningMode), Dimension.create(DIM_FEATURE_MODE, featureMode),
 				dimPipelineParameters, dimFeatureSets, dimClassificationArgs);
 		
-		ExperimentCrossValidation cv = new
-				ExperimentCrossValidation(experimentName ,CRFSuiteAdapter.class, 10 );
+
 		
 		return pSpace;
 	}
@@ -222,6 +227,23 @@ public class TrainModels implements Constants{
 				experimentName, modelOutputFolder, CRFSuiteAdapter.class,
 				getPreprocessing());
 
+
+		batch.setParameterSpace(pSpace);
+
+		// Run
+		Lab.getInstance().run(batch);
+	}
+	
+	protected void runCrossValidation(ParameterSpace pSpace) throws Exception {
+		
+		
+		ExperimentCrossValidation batch = new ExperimentCrossValidation(
+				experimentName, CRFSuiteAdapter.class, 10);
+		
+		batch.setPreprocessing(getPreprocessing());
+		batch.setParameterSpace(pSpace);
+		batch.setExecutionPolicy(ExecutionPolicy.RUN_AGAIN);
+		batch.addReport(CRFSuiteBatchCrossValidationReport.class);
 
 		batch.setParameterSpace(pSpace);
 

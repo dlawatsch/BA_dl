@@ -153,7 +153,13 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 								for(int o = 0; o < annotation.getLength(); o++){
 									if(annotation.item(o).getNodeName().equals("symbol")){
 										String POS = getAttributeString ((Element) annotation.item(o), "value");
-										allPOS.add(POS);
+						                if(POS.equals(",")){
+						                	allPOS.add("Interp");
+						                }else if(POS.contains(",") && POS.length()>1){
+						                	allPOS.add(POS.replaceAll(",",""));
+						                }else{
+						                	allPOS.add(POS);
+						                }
 									}
 								}
 							}

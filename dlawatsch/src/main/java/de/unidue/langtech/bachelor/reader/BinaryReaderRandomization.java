@@ -56,6 +56,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	Set<Integer> randomizedSID = new HashSet<Integer>();
 	int realtokens;
     JCas jcas;
+    int annotatedToken;
     
 	public void initialize(UimaContext context)
             throws ResourceInitializationException
@@ -68,7 +69,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
             
             maximumToken = Integer.valueOf(maxToken);
             currentTokenCount = 0;
-            
+            annotatedToken = 0;
             FileReader fr;
 
 			try {
@@ -118,7 +119,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 				jcas = JCasFactory.createJCas();
 				jcas = cas.getJCas();
 				DocumentMetaData meta = DocumentMetaData.get(jcas);
-				System.out.println(meta.getDocumentId());
+				System.out.println("[PROCESSING: " + meta.getDocumentId() + "]");
 				realtokens = 0;
 				
 				Sentence minsentence = null;
@@ -132,7 +133,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		        		}
 		        		if(randomizedSID.contains(sid.getID())){
 		        			randomizedSID.remove(sid.getID());
-		        			System.out.println(sid.getID());
+		        			System.out.println("[ANNOTATING SENTENCE ID: " + sid.getID() + "]");
 		        			addAnnotations(sentence);
 		        			
 		        		}
@@ -144,7 +145,9 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		        }else if(realtokens == 0 && hasNext() == false){
 		        	addAnnotations(minsentence);	        	
 		        }
-		        System.out.println(realtokens);
+		        annotatedToken += realtokens;
+		        System.out.println("[TOKENS IN THIS DOCUMENT: " + realtokens + "]");
+		        System.out.println("[ANNOTATED: " + annotatedToken + "/" + currentTokenCount + "]");
 			} catch (UIMAException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
