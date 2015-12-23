@@ -34,7 +34,6 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 	static Element rootElement;
 	static Object[] allDocuments;
 	static Resource currentFileName;
-	String documentText = "";
 	List<String> allWords = new ArrayList<String>();
 	List<String> allLemma = new ArrayList<String>();
 	List<String> allPOS = new ArrayList<String>();
@@ -71,7 +70,7 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 		Resource nextFile = nextFile();
 		System.out.println(nextFile.getLocation());
 		currentFileName = nextFile;
-		
+		String documentText = "";
 		try {
 			//A document builder is needed to process the XML/TML file
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -91,7 +90,7 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 				allSentences.add(sentence);
 				documentText += sentence;
 			}			
-			annotationProcess(jcas);
+			annotationProcess(jcas, documentText);
 			
 		}catch (Exception e){
 			e.printStackTrace();
@@ -140,7 +139,7 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 		return attrName.getTextContent();
 	}
 	
-	private void annotationProcess(JCas jcas) {
+	private void annotationProcess(JCas jcas, String documentText) {
 		jcas.setDocumentText(documentText);
 		//System.out.println(documentText);
 		int sentenceBeginn = 0;
