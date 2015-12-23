@@ -71,7 +71,7 @@ public class TrainModels implements Constants{
 	static String corpus;
 	static String modelOutputDir;
 	
-	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin){
+	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene){
 		if(islandic){
 			i = 0;
 			iteration = 1;
@@ -82,7 +82,7 @@ public class TrainModels implements Constants{
 
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
 			}
 		}	
 		
@@ -95,7 +95,7 @@ public class TrainModels implements Constants{
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
 			}	
 		}
 		
@@ -108,7 +108,7 @@ public class TrainModels implements Constants{
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
 			}	
 		}
 		
@@ -121,7 +121,7 @@ public class TrainModels implements Constants{
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
 			}	
 		}
 
@@ -134,126 +134,9 @@ public class TrainModels implements Constants{
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, languageCode);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
 			}	
 		}
-
-	}
-	
-	
-	public static void TrainAndSaveCRF(String corpusLocation, String languageCode, String homeFolder, String modelOutputFoldera, int i, String language){
-		i *= 10000;
-		System.out.println(i);
-		System.out.println(String.valueOf(i));
-
-		modelOutputFolder = new File(modelOutputFoldera);
-		modelOutputFolder.mkdirs();
-		experimentName = languageCode + String.valueOf(i);
-		System.setProperty("DKPRO_HOME", homeFolder);
-
-		ParameterSpace pSpace;
-		try {
-			pSpace = getParameterSpace(Constants.FM_SEQUENCE,
-					Constants.LM_SINGLE_LABEL);
-			TrainModels experiment = new TrainModels();
-			if(iteration==10){
-				experiment.validation(pSpace);
-			}
-			experiment.runCrossValidation(pSpace);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public static ParameterSpace getParameterSpace(String featureMode,
-			String learningMode) throws Exception {
-
-		// configure training and test data reader dimension
-		Map<String, Object> dimReaders = new HashMap<String, Object>();
-
-		Dimension<List<String>> dimFeatureSets = Dimension.create(
-				DIM_FEATURE_SET,
-				Arrays.asList(new String[] { CurrentToken.class.getName(),
-						NextToken.class.getName(),
-						PreviousToken.class.getName(),
-						LuceneCharacterNGramUFE.class.getName(),
-						LuceneNGramUFE.class.getName(),
-						NrOfCharsUFE.class.getName()
-				}));
-
-		Dimension<List<String>> dimClassificationArgs = Dimension
-				.create(DIM_CLASSIFICATION_ARGS,
-						asList(new String[] { CRFSuiteAdapter.ALGORITHM_ADAPTIVE_REGULARIZATION_OF_WEIGHT_VECTOR }));
-
-		Dimension<List<Object>> dimPipelineParameters = Dimension.create(
-				DIM_PIPELINE_PARAMS, Arrays.asList(new Object[] {
-						LuceneCharacterNGramUFE.PARAM_CHAR_NGRAM_MAX_N, 4, 
-						LuceneCharacterNGramUFE.PARAM_CHAR_NGRAM_MIN_N, 2,
-						LuceneCharacterNGramUFE.PARAM_CHAR_NGRAM_USE_TOP_K, 1000,
-						LuceneNGramUFE.PARAM_NGRAM_MIN_N, 1,
-						LuceneNGramUFE.PARAM_NGRAM_MAX_N, 3,
-						LuceneNGramUFE.PARAM_NGRAM_USE_TOP_K, 1000,
-						}));
-		
-		
-
-		dimReaders.put(DIM_READER_TRAIN, BinaryReaderRandomization.class);
-		dimReaders.put(DIM_READER_TRAIN_PARAMS, Arrays.asList(
-        		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, corpus + "/LANGUAGES/" + languageCode + "/BINARIES/",
-        		BinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
-        		BinaryReaderRandomization.PARAM_CORPUSLOCATION, corpus,
-        		BinaryReaderRandomization.PARAM_LANGUAGE, languageCode,
-        		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, String.valueOf(iteration * 10000) ,
-        		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"));
-
-		ParameterSpace pSpace = new ParameterSpace(Dimension.createBundle(
-				"readers", dimReaders), Dimension.create(DIM_LEARNING_MODE,
-				learningMode), Dimension.create(DIM_FEATURE_MODE, featureMode),
-				dimPipelineParameters, dimFeatureSets, dimClassificationArgs);
-		
-
-		
-		return pSpace;
-	}
-
-	protected void validation(ParameterSpace pSpace) throws Exception {
-		
-		
-		SaveModelCRFSuiteBatchTask batch = new SaveModelCRFSuiteBatchTask(
-				experimentName, modelOutputFolder, CRFSuiteAdapter.class,
-				getPreprocessing());
-
-
-		batch.setParameterSpace(pSpace);
-
-		// Run
-		Lab.getInstance().run(batch);
-	}
-	
-	protected void runCrossValidation(ParameterSpace pSpace) throws Exception {
-		
-		
-		ExperimentCrossValidation batch = new ExperimentCrossValidation(
-				experimentName, CRFSuiteAdapter.class, 10);
-		
-		batch.setPreprocessing(getPreprocessing());
-		batch.setParameterSpace(pSpace);
-		batch.setExecutionPolicy(ExecutionPolicy.RUN_AGAIN);
-		batch.addReport(CRFSuiteBatchCrossValidationReport.class);
-
-		batch.setParameterSpace(pSpace);
-
-		// Run
-		Lab.getInstance().run(batch);
-	}
-
-	protected AnalysisEngineDescription getPreprocessing()
-			throws ResourceInitializationException {
-		return createEngineDescription(NoOpAnnotator.class);	
 
 	}
 }

@@ -27,10 +27,11 @@ public class CreateAndTrainModels {
 		 */
 		boolean islandic = true;
 		boolean english = true;
-		boolean german = false;
+		boolean german = true;
 		boolean polnish = true;
-		boolean latin = false;
+		boolean latin = true;
+		boolean slovene = true;
 		
-		TrainModels.process(corpusLocation, islandic, english, german, polnish, latin);		
+		TrainModels.process(corpusLocation, islandic, english, german, polnish, latin, slovene);		
 	}
 }
