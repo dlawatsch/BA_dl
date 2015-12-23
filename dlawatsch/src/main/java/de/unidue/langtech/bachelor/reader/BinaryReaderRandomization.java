@@ -115,12 +115,13 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	@Override
 	public void getNext(CAS cas) throws IOException, CollectionException {
 			super.getNext(cas);
+			realtokens = 0;
 			try {
 				jcas = JCasFactory.createJCas();
 				jcas = cas.getJCas();
 				DocumentMetaData meta = DocumentMetaData.get(jcas);
 				System.out.println("[PROCESSING: " + meta.getDocumentId() + "]");
-				realtokens = 0;
+				
 				
 				Sentence minsentence = null;
 				int mintoken = Integer.MAX_VALUE;
@@ -148,6 +149,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		        
 		        System.out.println("[TOKENS IN THIS DOCUMENT: " + realtokens + "]");
 		        System.out.println("[ANNOTATED: " + annotatedToken + "/" + currentTokenCount + "]");
+
 			} catch (UIMAException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -162,7 +164,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	private void addAnnotations(Sentence sentence) {
         TextClassificationSequence sequence = new TextClassificationSequence(jcas, sentence.getBegin(), sentence.getEnd());
         sequence.addToIndexes();
-        
+        int tokensInThis = 0;
         for (Token token : JCasUtil.selectCovered(jcas, Token.class, sentence)) {
             TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
 
@@ -174,8 +176,9 @@ public class BinaryReaderRandomization extends BinaryCasReader{
             outcome.setOutcome(token.getPos().getPosValue());
             outcome.addToIndexes();
             realtokens++;
+            tokensInThis++;
         }
-        annotatedToken += realtokens;
+        annotatedToken += tokensInThis;
 	}
 
 }
