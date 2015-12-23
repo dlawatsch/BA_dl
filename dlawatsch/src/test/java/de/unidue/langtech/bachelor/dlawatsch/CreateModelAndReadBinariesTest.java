@@ -37,7 +37,6 @@ import de.tudarmstadt.ukp.dkpro.tc.features.token.CurrentToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.NextToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.PreviousToken;
 import de.tudarmstadt.ukp.dkpro.tc.ml.ExperimentCrossValidation;
-import de.unidue.langtech.bachelor.pipelines.TrainAndSaveNewModelCRF;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
 
 public class CreateModelAndReadBinariesTest implements Constants {
