@@ -145,7 +145,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		        }else if(realtokens == 0 && hasNext() == false){
 		        	addAnnotations(minsentence);	        	
 		        }
-		        annotatedToken += realtokens;
+		        
 		        System.out.println("[TOKENS IN THIS DOCUMENT: " + realtokens + "]");
 		        System.out.println("[ANNOTATED: " + annotatedToken + "/" + currentTokenCount + "]");
 			} catch (UIMAException e) {
@@ -175,7 +175,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
             outcome.addToIndexes();
             realtokens++;
         }
-		
+        annotatedToken += realtokens;
 	}
 
 }
