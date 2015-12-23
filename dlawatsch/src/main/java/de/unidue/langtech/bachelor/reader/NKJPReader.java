@@ -69,6 +69,10 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 	
 	@Override
 	public void getNext(JCas jcas) throws IOException, CollectionException {
+		allWords.clear();
+		allLemma.clear();
+		allPOS.clear();
+		allSentences.clear();
 		// TODO Auto-generated method stub
 		Resource nextFile = nextFile();
 		System.out.println(nextFile.getLocation());
