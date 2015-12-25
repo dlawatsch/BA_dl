@@ -81,7 +81,6 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
     public void getNext(JCas jcas)
         throws IOException, CollectionException
     {
-    	lines.clear();
     	Resource nextFile = nextFile();
 		lines = FileUtils.readLines(nextFile.getResource().getFile());
 		System.out.println(nextFile.getLocation());

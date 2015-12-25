@@ -50,8 +50,32 @@ public class ExceedsUpperBoundChecker extends JCasAnnotator_ImplBase{
     
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-        
-        	for (SequenceID sid : JCasUtil.select(jcas, SequenceID.class)){
+        if(language.equals("POLNISH")){
+        for (SequenceID sid : JCasUtil.select(jcas, SequenceID.class)){
+        	processedTokenCount += (sid.getNrOfTokens());
+        }
+			
+        if(processedTokenCount >= upperBound){
+        	System.out.println("[UPPER BOUND EXCEEDED: "+ processedTokenCount + " Tokens annotated]");
+        	if(language.equals("ISLANDIC")){
+            	IslandicCorpusReader.reachedUpperBound = true;
+        	}
+        	if(language.equals("ENGLISH")){
+            	BNCReader.reachedUpperBound = true;
+        	}
+        	if(language.equals("LATIN")){
+            	LatinReader.reachedUpperBound = true;
+        	}
+        	if(language.equals("POLNISH")){
+            	NKJPReader.reachedUpperBound = true;
+        	}
+        	if(language.equals("SLOVENE")){
+            	SloveneReader.reachedUpperBound = true;
+        	}
+        }		
+	}else{
+        for(JCas out : Build400TokenJCasEach.allJcas){
+        	for (SequenceID sid : JCasUtil.select(out, SequenceID.class)){
         		processedTokenCount += (sid.getNrOfTokens());
         	}
 			
@@ -72,6 +96,8 @@ public class ExceedsUpperBoundChecker extends JCasAnnotator_ImplBase{
         	if(language.equals("SLOVENE")){
             	SloveneReader.reachedUpperBound = true;
         	}
-        }		
+        }	
+        }
 	}
+	}    
 }

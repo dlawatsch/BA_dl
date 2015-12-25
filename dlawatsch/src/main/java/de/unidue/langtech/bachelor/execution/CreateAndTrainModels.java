@@ -26,11 +26,11 @@ public class CreateAndTrainModels {
 		 * corpora to be processed to Binaries
 		 */
 		boolean islandic = true;
-		boolean english = true;
-		boolean german = true;
-		boolean polnish = true;
-		boolean latin = true;
-		boolean slovene = true;
+		boolean english = false;
+		boolean german = false;
+		boolean polnish = false;
+		boolean latin = false;
+		boolean slovene = false;
 		
 		TrainModels.process(corpusLocation, islandic, english, german, polnish, latin, slovene);		
 	}

@@ -24,8 +24,8 @@ public class CreateBinaries {
 		 * if you dont wish those
 		 * corpora to be processed to Binaries
 		 */
-		boolean islandic = true;
-		boolean english = true;
+		boolean islandic = false;
+		boolean english = false;
 		boolean german = true;
 		boolean polnish = true;
 		boolean latin = true;

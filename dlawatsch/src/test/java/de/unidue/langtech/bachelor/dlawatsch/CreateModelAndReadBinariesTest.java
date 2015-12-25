@@ -114,7 +114,7 @@ public class CreateModelAndReadBinariesTest implements Constants {
 				BinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
 				BinaryReaderRandomization.PARAM_CORPUSLOCATION, "src/main/resources/Binaries/polnish/**/",
 				BinaryReaderRandomization.PARAM_LANGUAGE, "POLNISH",
-				BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, "1000",
+				BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, "10000",
 				BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"));
 
 		ParameterSpace pSpace = new ParameterSpace(Dimension.createBundle(

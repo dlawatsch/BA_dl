@@ -17,6 +17,7 @@ import org.apache.uima.fit.util.JCasUtil;
 
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.springframework.util.SystemPropertyUtils;
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
@@ -42,15 +43,9 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
-//		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
-//			
-//			for (SequenceID sid : JCasUtil.selectCovered(jcas, SequenceID.class, s)){
-//				System.out.println(sid.getID() + " " + sid.getNrOfTokens() + " " + sid.getBegin() + "-" + sid.getEnd());
-//				System.out.println(s.getBegin() + "-" + s.getEnd());
-//			}	
-//			System.out.println("TEEEEEEEEEEEEST");
-//		}
-		
+
+		if(language.equals("POLNISH")){
+			System.out.println("TRIE");
 		UUID uniqueID = UUID.randomUUID();
 		
     	DocumentMetaData meta = DocumentMetaData.get(jcas);
@@ -60,7 +55,25 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 			} catch (ResourceInitializationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}   			            		 				
+			}
+		}
+		else{
+	        for(JCas out : Build400TokenJCasEach.allJcas){
+	        	System.out.println("TRUE : " + out.getDocumentLanguage());
+	    		UUID uniqueID = UUID.randomUUID();
+	        	DocumentMetaData meta = DocumentMetaData.get(jcas);
+	        	meta.setDocumentId("FILE_" + String.valueOf(uniqueID));
+					try {
+						generateBinJCas(out);
+					} catch (ResourceInitializationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        }
+	        Build400TokenJCasEach.allJcas.clear();
+
+		}
+	
 	}
 
 	private void generateBinJCas(JCas out) throws ResourceInitializationException, AnalysisEngineProcessException {

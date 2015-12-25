@@ -52,7 +52,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
     
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-
+		if(language.equals("POLNISH")){
         try {
 			output = new BufferedWriter(new FileWriter(file, true));
 		} catch (IOException e) {
@@ -85,6 +85,44 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		}
+		else{
+	        try {
+				output = new BufferedWriter(new FileWriter(file, true));
+		        for(JCas out : Build400TokenJCasEach.allJcas){
+					for (Sentence s : JCasUtil.select(out, Sentence.class)) {
+						int numberOfTokens = 0;
+						
+						SequenceID sid = new SequenceID(out);
+						sid.setBegin(s.getBegin());
+						sid.setEnd(s.getEnd());
+						sid.setID(sequenceIDcount);
+						
+						for (Token t : JCasUtil.selectCovered(out, Token.class, s)){
+							numberOfTokens++;
+						}
+						
+						sid.setNrOfTokens(numberOfTokens);
+						sid.addToIndexes(out);
+						
+						addToFile(sid.getID() + " " + sid.getNrOfTokens());
+						sequenceIDcount++;									
+					}
+					}		        	
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				output.flush();
+				output.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+			
+		}		    
 	}
 
 
