@@ -25,12 +25,12 @@ public class CreateAndTrainModels {
 		 * if you dont wish those
 		 * corpora to be processed to Binaries
 		 */
-		boolean islandic = true;
+		boolean islandic = false;
 		boolean english = false;
 		boolean german = false;
 		boolean polnish = false;
 		boolean latin = false;
-		boolean slovene = false;
+		boolean slovene = true;
 		
 		TrainModels.process(corpusLocation, islandic, english, german, polnish, latin, slovene);		
 	}

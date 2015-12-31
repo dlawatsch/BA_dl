@@ -26,10 +26,10 @@ public class CreateBinaries {
 		 */
 		boolean islandic = false;
 		boolean english = false;
-		boolean german = true;
+		boolean german = false;
 		boolean polnish = true;
-		boolean latin = true;
-		boolean slovene = true;
+		boolean latin = false;
+		boolean slovene = false;
 		
 		CreateBinariesPipeline.writeToBinJCas(corpusLocation, islandic, english, german, polnish, latin, slovene);		
 	}

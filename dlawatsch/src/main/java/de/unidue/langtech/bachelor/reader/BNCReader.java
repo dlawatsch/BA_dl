@@ -122,7 +122,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 						Node c = currentWordNodeList.item(z);
 						if(c.getNodeName().equals("w")){
 							String lemma = getAttributeString(c, "hw");
-							String pos = getAttributeString(c, "pos");
+							String pos = getAttributeString(c, "c5");
 							String word = c.getTextContent().trim();
 							allWords.add(word);
 							allPOS.add(pos);
@@ -142,7 +142,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 				//actual words are nodes in "fs" xml types
 				else if(current.getNodeName().equals("w")){
 					String lemma = getAttributeString(current, "hw");
-					String pos = getAttributeString(current, "pos");
+					String pos = getAttributeString(current, "c5");
 					String word = current.getTextContent().trim();
 					allWords.add(word);
 					allPOS.add(pos);

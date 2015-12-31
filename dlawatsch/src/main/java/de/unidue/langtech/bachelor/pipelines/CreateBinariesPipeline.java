@@ -87,8 +87,6 @@ public class CreateBinariesPipeline {
 		                        NKJPReader.PARAM_SOURCE_LOCATION, corpusLocation + "POLNISH-NATIONAL_NKJP-PodkorpusMilionowy-1.0/**/",
 		                        NKJPReader.PARAM_PATTERNS, "ann_words.xml"
 		                ),
-		                AnalysisEngineFactory.createEngineDescription(Build400TokenJCasEach.class,
-		                		Build400TokenJCasEach.PARAM_LANGUAGE, language),
 		                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
 		                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
 		                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,

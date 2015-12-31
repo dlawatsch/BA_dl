@@ -45,7 +45,6 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 
 
 		if(language.equals("POLNISH")){
-			System.out.println("TRIE");
 		UUID uniqueID = UUID.randomUUID();
 		
     	DocumentMetaData meta = DocumentMetaData.get(jcas);
