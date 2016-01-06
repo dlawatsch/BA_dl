@@ -112,7 +112,7 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 			Node current = allNodesFromCurrentSentenceNodes.item(i);
 			if(current.getNodeName().equals("w")){
 					String lemma = getAttributeString(current, "lemma");
-					String pos = getAttributeString(current, "ana");
+					String pos = getAttributeString(current, "ctag");
 					String word = current.getTextContent();
 					allWords.add(word);
 					allPOS.add(pos);

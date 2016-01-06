@@ -11,7 +11,7 @@ import de.unidue.langtech.bachelor.Annotators.WriteBinJcas;
 import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
-import de.unidue.langtech.bachelor.reader.ReadBinJCasToJCasForModelGeneration;
+import de.unidue.langtech.bachelor.reader.NKJPReader;
 import de.unidue.langtech.bachelor.reader.SloveneReader;
 
 
@@ -21,9 +21,9 @@ import de.unidue.langtech.bachelor.reader.SloveneReader;
 	        {
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
-	                    		IslandicCorpusReader.class,
-	                    		IslandicCorpusReader.PARAM_SOURCE_LOCATION, "/home/dominik/Dokumente/BA/CORPORA/ICELANDIC_GOLD/MIM-GOLD_0.9",
-	                    		IslandicCorpusReader.PARAM_PATTERNS, "*.txt"
+	                    		NKJPReader.class,
+		                        NKJPReader.PARAM_SOURCE_LOCATION, "/home/dominikl/Dokumente/BA/CORPORA/POLNISH-NATIONAL_NKJP-PodkorpusMilionowy-1.0/**/",
+		                        NKJPReader.PARAM_PATTERNS, "ann_morphosyntax.xml"
 
 	                    ),
 

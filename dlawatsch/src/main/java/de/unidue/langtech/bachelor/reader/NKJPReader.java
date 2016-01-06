@@ -130,42 +130,52 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 						//had problems with casting to Element type. workaround: 
 						//http://stackoverflow.com/questions/21170909/error-org-apache-xerces-dom-deferredtextimpl-cannot-be-cast-to-org-w3c-dom-elem
 						if(currentWordNodeList.item(z).getNodeType() == Node.ELEMENT_NODE){
-							NodeList annotation = c.getChildNodes();
+							NodeList wordValue = c.getChildNodes();
 							String attribute = getAttributeString(currentWordNodeList.item(z), "name");
 							
 							if(attribute.equals("orth")){
-								for(int o = 0; o < annotation.getLength(); o++){
-									if(testNodeString(annotation.item(o).getNodeName())){
-										String orthographic = annotation.item(o).getTextContent();	
+								for(int o = 0; o < wordValue.getLength(); o++){
+									if(testNodeString(wordValue.item(o).getNodeName())){
+										String orthographic = wordValue.item(o).getTextContent();	
 										allWords.add(orthographic);
 										cleanedSentence += orthographic + " ";
 									}
 								}
 							}
 							
-							if(attribute.equals("base")){
-								for(int o = 0; o < annotation.getLength(); o++){
-									if(testNodeString(annotation.item(o).getNodeName())){
-										String base = annotation.item(o).getTextContent();
-										allLemma.add(base);
+							String lemmatmp = "";
+							if(attribute.equals("disamb")){
+								for(int o = 0; o < wordValue.getLength(); o++){
+									if(wordValue.item(o).getNodeType() == Node.ELEMENT_NODE){
+										NodeList xx = wordValue.item(o).getChildNodes();
+										if(wordValue.item(o).getNodeName().equals("fs")){
+											for(int oo = 0; oo < xx.getLength(); oo++){
+												if(xx.item(oo).getNodeType() == Node.ELEMENT_NODE){	
+													NodeList xy = xx.item(oo).getChildNodes();
+													String interpretation = getAttributeString(xx.item(oo), "name");
+													if(interpretation.equals("interpretation")){
+														String lemma = xx.item(oo).getTextContent().trim();	
+														String[] parts = lemma.split(":");
+														if(parts[0].length() == 0){
+															lemmatmp = ":";
+														}else{
+															lemmatmp = parts[0];
+														}
+														String pos = "";
+														for(int ii = 1; ii<parts.length-1; ii++){
+															pos += parts[ii] + ":";
+														}
+														pos+=parts[parts.length-1];
+														allLemma.add(lemmatmp);
+														allPOS.add(pos);
+														break;
+													}
+												}
+											}
+										}	
 									}
 								}
-							}
-							
-							if(attribute.equals("ctag")){
-								for(int o = 0; o < annotation.getLength(); o++){
-									if(annotation.item(o).getNodeName().equals("symbol")){
-										String POS = getAttributeString ((Element) annotation.item(o), "value");
-						                if(POS.equals(",")){
-						                	allPOS.add("Interp");
-						                }else if(POS.contains(",") && POS.length()>1){
-						                	allPOS.add(POS.replaceAll(",",""));
-						                }else{
-						                	allPOS.add(POS);
-						                }
-									}
-								}
-							}
+							}							
 						}
 					}	
 				}
@@ -204,7 +214,6 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		int posCount = 0;
 		
         for (Sentence se : JCasUtil.select(jcas, Sentence.class)) { 
-            
             while(wordEnd < se.getEnd()){
             	
             	String word = allWords.get(posCount);
@@ -220,7 +229,22 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
                 lemma.addToIndexes();
                 
 		        POS pos = new POS(jcas);
-		        pos.setPosValue(allPOS.get(posCount));
+		        
+		        String posTmp = allPOS.get(posCount);
+		        if(posTmp.contains(":")){
+			        String[] posParts = posTmp.split(":");
+		        	if(posParts[0].length() == 0){
+		        		pos.setPosValue(posParts[1]);
+		        	}else{
+		        		pos.setPosValue(posParts[0]);
+		        	}
+	
+			        
+		        }else{
+		        	pos.setPosValue(posTmp);
+
+		        }
+
 		        pos.addToIndexes();
 		        
 		        token.setPos(pos);

@@ -137,6 +137,19 @@ public class TrainModels implements Constants{
 				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
 			}	
 		}
+		
+		if(slovene){
+			i = 0;
+			corpus = corpusLocation;
+			languageCode = "SLOVENE";
+			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			iteration = 1;
+
+			for(;iteration <= 10; iteration++){
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
+			}	
+		}
 
 	}
 }

@@ -201,6 +201,8 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		        POS pos = new POS(jcas);
 		        pos.setPosValue(allPOS.get(posCount));
 		        pos.addToIndexes();
+		        //VERB						//VVFIN
+		        String simpleName = pos.getClass().getSimpleName();
 		        
 		        token.setPos(pos);
 		        token.setLemma(lemma);

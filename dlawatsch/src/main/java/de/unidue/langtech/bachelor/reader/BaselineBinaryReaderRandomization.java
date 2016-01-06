@@ -24,6 +24,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.w3c.dom.Element;
 
+import de.tudarmstadt.ukp.dkpro.core.api.frequency.util.FrequencyDistribution;
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -35,7 +36,7 @@ import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 import de.unidue.langtech.bachelor.pipelines.BaselineTrainAndSaveModell;
 import de.unidue.langtech.bachelor.type.SequenceID;
 
-public class BinaryReaderRandomization extends BinaryCasReader{
+public class BaselineBinaryReaderRandomization extends BinaryCasReader{
     public static final String PARAM_CORPUSLOCATION = "PARAM_CORPUSLOCATION";
     @ConfigurationParameter(name = PARAM_CORPUSLOCATION, mandatory = true, defaultValue ="TEST")
     protected String corpusLocation;
@@ -48,10 +49,6 @@ public class BinaryReaderRandomization extends BinaryCasReader{
     @ConfigurationParameter(name = PARAM_USE_X_MAX_TOKEN, mandatory = true, defaultValue ="TEST")
     protected String maxToken;
     
-    public static final String PARAM_USE_BASELINE = "PARAM_USE_BASELINE";
-    @ConfigurationParameter(name = PARAM_USE_BASELINE, mandatory = true, defaultValue ="TEST")
-    protected String baseline;
-    
     static int currentDocument;
 	static Object[] allDocuments;
     Random randomGenerator;
@@ -62,14 +59,22 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	int realtokens;
     JCas jcas;
     int annotatedToken;
-    
+    static FrequencyDistribution<String> fd;
+    static File outputfile;
+
 	public void initialize(UimaContext context)
             throws ResourceInitializationException
         {
             super.initialize(context);    
+            File dir = new File(corpusLocation + "/LANGUAGES/" + language + "/FREQUENCIES/");
+            dir.mkdirs();
+            
+            outputfile = new File(corpusLocation + "/LANGUAGES/" + language + "/FREQUENCIES/" + maxToken+"_FREQUENCIES");
+            
             allDocuments = getResources().toArray();
             currentDocument = 0;
-            
+            fd = new FrequencyDistribution<String>();
+
             randomGenerator = new Random();
             
             maximumToken = Integer.valueOf(maxToken);
@@ -113,6 +118,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		if((currentDocument < allDocuments.length)){
 			return true;
 		}else{
+			fd.save(outputfile);
 			return false;
 		}
 	}
@@ -132,7 +138,6 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 				int mintoken = Integer.MAX_VALUE;
 				
 		        for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
-		        	
 		        	for (SequenceID sid : JCasUtil.selectCovering(jcas, SequenceID.class, sentence)){
 		        		if(sid.getNrOfTokens() < mintoken){
 		        			mintoken = sid.getNrOfTokens();
@@ -140,23 +145,12 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		        		}
 		        		if(randomizedSID.contains(sid.getID())){
 		        			randomizedSID.remove(sid.getID());
-		        			System.out.println("[ANNOTATING SENTENCE ID: " + sid.getID() + "]");
-		        			if(baseline.equals("false")){
-			        			addAnnotations(sentence);
-		        			}else{
-		        				addBaselineAnnotations(sentence);
-		        			}
+		        			addFrequencies(sentence);
 		        			
 		        		}
 		        	}		        	
 		        }
-		        currentDocument++;
-		        if(realtokens == 0 && hasNext() == true){
-		        	getNext(cas);	        	
-		        }else if(realtokens == 0 && hasNext() == false){
-		        	addAnnotations(minsentence);	        	
-		        }
-		        
+		        currentDocument++;		        
 
 
 			} catch (UIMAException e) {
@@ -170,47 +164,13 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	}
 
 
-	private void addAnnotations(Sentence sentence) {
-        TextClassificationSequence sequence = new TextClassificationSequence(jcas, sentence.getBegin(), sentence.getEnd());
-        sequence.addToIndexes();
+	private void addFrequencies(Sentence sentence) {
         int tokensInThis = 0;
         for (Token token : JCasUtil.selectCovered(jcas, Token.class, sentence)) {
-            TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
 
-            // will add the token content as a suffix to the ID of this unit 
-            unit.setSuffix(token.getCoveredText());
-            unit.addToIndexes();
-            
-            TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-            outcome.setOutcome(token.getPos().getPosValue());
-            outcome.addToIndexes();
-            realtokens++;
-            tokensInThis++;
-        }
-        annotatedToken += tokensInThis;
-        System.out.println("[THIS DOCUMENT ANNOTATED: " + annotatedToken + "/" + currentTokenCount + "]");
-	}
-	
+        	BaselineTrainAndSaveModell.cfd.addSample(token.getCoveredText(), token.getPos().getPosValue(), 1);
+        	fd.addSample(token.getPos().getPosValue(), 1);           
 
-	private void addBaselineAnnotations(Sentence sentence) {
-        TextClassificationSequence sequence = new TextClassificationSequence(jcas, sentence.getBegin(), sentence.getEnd());
-        sequence.addToIndexes();
-        int tokensInThis = 0;
-        for (Token token : JCasUtil.selectCovered(jcas, Token.class, sentence)) {
-            TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
-
-            // will add the token content as a suffix to the ID of this unit 
-            unit.setSuffix(token.getCoveredText());
-            unit.addToIndexes();
-            String baselineOutcome = "";
-            try{
-                baselineOutcome = BaselineTrainAndSaveModell.cfd.getFrequencyDistribution(token.getCoveredText()).getSampleWithMaxFreq();
-            }catch(Exception e){
-            	baselineOutcome = token.getPos().getPosValue();
-            }
-            TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-            outcome.setOutcome(baselineOutcome);
-            outcome.addToIndexes();
             realtokens++;
             tokensInThis++;
         }

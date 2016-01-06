@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -31,12 +32,12 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
     
     public static final String PARAM_LANGUAGE = "PARAM_LANGUAGE";
     @ConfigurationParameter(name = PARAM_LANGUAGE, mandatory = true, defaultValue ="TEST")
-    protected String language;
+    protected static String language;
     
     
     int sequenceIDcount;
-    File file;
-    Writer output;
+    static File file;
+    static Writer output;
 	public void initialize(UimaContext context)
             throws ResourceInitializationException
         {
@@ -62,7 +63,6 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
         
 		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
 			int numberOfTokens = 0;
-			
 			SequenceID sid = new SequenceID(jcas);
 			sid.setBegin(s.getBegin());
 			sid.setEnd(s.getEnd());
@@ -76,7 +76,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 			sid.addToIndexes();
 			
 			addToFile(sid.getID() + " " + sid.getNrOfTokens());
-			sequenceIDcount++;									
+			sequenceIDcount++;
 		}
 		try {
 			output.flush();
@@ -84,6 +84,9 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if(language.equals("GERMAN") || language.equals("LATIN")){
+			WriteBinJcas.createBinariesOutOfSingleFile(jcas);
 		}
 		}
 		else{
@@ -127,7 +130,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 
 
 
-	private void addToFile(String string) {
+	private static void addToFile(String string) {
 		try {
 //			System.out.println(string);			
 			output.write(string);
@@ -137,5 +140,41 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
+	}
+	
+	public static void processSingleFile(JCas jcas){
+        try {
+			output = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
+			int numberOfTokens = 0;
+			SequenceID sid = new SequenceID(jcas);
+			sid.setBegin(s.getBegin());
+			sid.setEnd(s.getEnd());
+			sid.setID(Build400TokenJCasEach.sequenceID);
+			
+			for (Token t : JCasUtil.selectCovered(jcas, Token.class, s)){
+				numberOfTokens++;
+			}
+			
+			sid.setNrOfTokens(numberOfTokens);
+			sid.addToIndexes();
+			
+			addToFile(sid.getID() + " " + sid.getNrOfTokens());
+			//sequenceIDcount++;	
+			Build400TokenJCasEach.sequenceID++;
+		}
+		try {
+			output.flush();
+			output.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		WriteBinJcas.createBinariesOutOfSingleFile(jcas);	
 	}
 }

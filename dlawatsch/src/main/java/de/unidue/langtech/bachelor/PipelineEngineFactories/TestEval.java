@@ -16,6 +16,6 @@ public class TestEval extends JCasAnnotator_ImplBase{
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-		System.out.println("test");
+//		System.out.println("test");
 	}
 }

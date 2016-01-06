@@ -21,15 +21,21 @@ import static java.util.Arrays.asList;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.component.NoOpAnnotator;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.CollectionReaderFactory;
+import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import de.tudarmstadt.ukp.dkpro.core.api.frequency.util.ConditionalFrequencyDistribution;
 import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
 import de.tudarmstadt.ukp.dkpro.core.io.tei.TeiReader;
 import de.tudarmstadt.ukp.dkpro.core.io.text.TextReader;
@@ -48,6 +54,8 @@ import de.tudarmstadt.ukp.dkpro.tc.features.token.CurrentToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.NextToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.PreviousToken;
 import de.tudarmstadt.ukp.dkpro.tc.ml.ExperimentCrossValidation;
+import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
+import de.unidue.langtech.bachelor.reader.BaselineBinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
 import de.unidue.langtech.bachelor.reader.NKJPReader;
@@ -55,7 +63,7 @@ import de.unidue.langtech.bachelor.reader.NKJPReader;
 /**
  * Example class of how to train an own model
  */
-public class TrainAndSaveNewModelCRF implements Constants {
+public class BaselineTrainAndSaveModell implements Constants {
 static String experimentName;
 static File modelOutputFolder;
 static String homeFolder;
@@ -64,37 +72,61 @@ static int iteration;
 static int i;
 static String corpus;
 static String modelOutputDir;
+public static ConditionalFrequencyDistribution<String, String> cfd;
 
 public static void TrainAndSaveCRF(String cLoc, String languageCODE, String homeDir, String modelOutputFoldera, int i){
 	iteration = i;
-	System.out.println(i*10000 + " Token Iteration");
 	corpus = cLoc;
 	languageCode = languageCODE;
 	homeFolder = homeDir;
-	if(i == 1){
-		System.setProperty("DKPRO_HOME", homeFolder);
-	}
+
+	System.setProperty("DKPRO_HOME", homeFolder);
+
 	i *= 10000;
 	modelOutputFolder = new File(modelOutputFoldera);
 	modelOutputFolder.mkdirs();
 	experimentName = languageCode + String.valueOf(i);
+	
+    cfd = new ConditionalFrequencyDistribution<String, String>();
 
+	
+    try {
+		SimplePipeline.runPipeline(
+		        CollectionReaderFactory.createReader(
+		        		BaselineBinaryReaderRandomization.class,
+		        		BaselineBinaryReaderRandomization.PARAM_SOURCE_LOCATION, corpus + "/LANGUAGES/" + languageCode + "/BINARIES/",
+		        		BaselineBinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
+		        		BaselineBinaryReaderRandomization.PARAM_CORPUSLOCATION, corpus,
+		        		BaselineBinaryReaderRandomization.PARAM_LANGUAGE, languageCode,
+		        		BaselineBinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, String.valueOf(iteration * 10000)
+		        ),
 
-	ParameterSpace pSpace;
-	try {
-		pSpace = getParameterSpace(Constants.FM_SEQUENCE,
-				Constants.LM_SINGLE_LABEL);
-		TrainAndSaveNewModelCRF experiment = new TrainAndSaveNewModelCRF();
-		if(iteration==10){
-			experiment.validation(pSpace);
-		}
-		experiment.runCrossValidation(pSpace);
-	} catch (Exception e) {
+		         AnalysisEngineFactory.createEngineDescription(TestEval.class));
+	} catch (ResourceInitializationException e1) {
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+		e1.printStackTrace();
+	} catch (UIMAException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
 	}
 
 
+	ParameterSpace pSpace;
+//	try {
+//		pSpace = getParameterSpace(Constants.FM_SEQUENCE,
+//				Constants.LM_SINGLE_LABEL);
+//		BaselineTrainAndSaveModell experiment = new BaselineTrainAndSaveModell();
+//		if(iteration==10){
+//			experiment.validation(pSpace);
+//		}
+//		experiment.runCrossValidation(pSpace);
+//	} catch (Exception e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
 }
 
 @SuppressWarnings("unchecked")
@@ -133,7 +165,7 @@ public static ParameterSpace getParameterSpace(String featureMode,
         		BinaryReaderRandomization.PARAM_CORPUSLOCATION, corpus,
         		BinaryReaderRandomization.PARAM_LANGUAGE, languageCode,
         		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, String.valueOf(iteration * 10000) ,
-        		BinaryReaderRandomization.PARAM_USE_BASELINE, "false",
+        		BinaryReaderRandomization.PARAM_USE_BASELINE, "true",
         		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"));
 
 	ParameterSpace pSpace = new ParameterSpace(Dimension.createBundle(
@@ -164,7 +196,7 @@ protected void runCrossValidation(ParameterSpace pSpace) throws Exception {
 
 
 	ExperimentCrossValidation batch = new ExperimentCrossValidation(
-			experimentName, CRFSuiteAdapter.class, 10);
+			experimentName, CRFSuiteAdapter.class, 5);
 
 	batch.setPreprocessing(getPreprocessing());
 	batch.setParameterSpace(pSpace);

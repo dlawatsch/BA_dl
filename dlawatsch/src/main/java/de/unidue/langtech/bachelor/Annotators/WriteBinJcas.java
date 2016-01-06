@@ -35,14 +35,13 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 
     public static final String PARAM_LANGUAGE = "PARAM_LANGUAGE";
     @ConfigurationParameter(name = PARAM_LANGUAGE, mandatory = true, defaultValue ="TEST")
-    protected String language;
+    protected static String language;
     
     public static final String PARAM_CORPUSLOCATION = "PARAM_CORPUSLOCATION";
     @ConfigurationParameter(name = PARAM_CORPUSLOCATION, mandatory = true, defaultValue ="TEST")
-    protected String corpusLocation;
+    protected static String corpusLocation;
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
-
 
 		if(language.equals("POLNISH")){
 		UUID uniqueID = UUID.randomUUID();
@@ -86,6 +85,31 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	        writer.process(out);
 	        writer.collectionProcessComplete();
 	}
-
-
+	
+	public static void createBinariesOutOfSingleFile(JCas jcas){
+		UUID uniqueID = UUID.randomUUID();
+		
+    	DocumentMetaData meta = DocumentMetaData.get(jcas);
+    	meta.setDocumentId("FILE_" + String.valueOf(uniqueID));
+			try {
+			      AnalysisEngine writer = createEngine(
+			                BinaryCasWriter.class, 
+			                BinaryCasWriter.PARAM_FORMAT, "S", 
+			                BinaryCasWriter.PARAM_TARGET_LOCATION, corpusLocation + "/LANGUAGES/" + language + "/BINARIES/",
+			                BinaryCasWriter.PARAM_USE_DOCUMENT_ID, true,
+			                BinaryCasWriter.PARAM_TYPE_SYSTEM_LOCATION, 
+			                        true ? "typesystem.bin" : null);	      
+			        try {
+						writer.process(jcas);
+						writer.collectionProcessComplete();
+					} catch (AnalysisEngineProcessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			       
+			} catch (ResourceInitializationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 }

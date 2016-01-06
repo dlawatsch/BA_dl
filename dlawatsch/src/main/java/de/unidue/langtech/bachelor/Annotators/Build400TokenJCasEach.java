@@ -30,6 +30,7 @@ import de.unidue.langtech.bachelor.type.SequenceID;
 
 public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 	
+	public static int sequenceID;
 	public static List<JCas> allJcas = new ArrayList<JCas>();
 	List<String> allWords = new ArrayList<String>();
 	List<String> allLemma = new ArrayList<String>();
@@ -61,6 +62,7 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		numberOfTokens = 0;
 		documentText = "";
+		sequenceID = 0;
 		try {
 
         	for (Sentence sentance : JCasUtil.select(jcas, Sentence.class)) {
@@ -157,8 +159,14 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 			allSentences.clear();
 			documentText = "";
 			numberOfTokens = 0;
-	        System.out.println(meta.getDocumentId() + " META");
-			allJcas.add(out);
+			if(language.equals("GERMAN") || language.equals("LATIN")){
+				SequenceIdAnnotator.processSingleFile(out);
+		        System.out.println(meta.getDocumentId() + "PROCESSING");
+
+			}else{
+				allJcas.add(out);
+
+			}
 		} catch (UIMAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -28,7 +28,7 @@ public class CreateAndTrainModels {
 		boolean islandic = false;
 		boolean english = false;
 		boolean german = false;
-		boolean polnish = false;
+		boolean polnish = true;
 		boolean latin = false;
 		boolean slovene = true;
 		
