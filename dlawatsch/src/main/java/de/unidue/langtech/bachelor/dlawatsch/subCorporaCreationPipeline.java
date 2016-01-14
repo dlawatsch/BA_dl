@@ -21,10 +21,14 @@ import de.unidue.langtech.bachelor.reader.SloveneReader;
 	        {
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
-	                    		NKJPReader.class,
-		                        NKJPReader.PARAM_SOURCE_LOCATION, "/home/dominikl/Dokumente/BA/CORPORA/POLNISH-NATIONAL_NKJP-PodkorpusMilionowy-1.0/**/",
-		                        NKJPReader.PARAM_PATTERNS, "ann_morphosyntax.xml"
-
+	                    		BinaryReaderRandomization.class,
+	                       		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, "/home/dominikl/Dokumente/BA/CORPORA/" + "/LANGUAGES/" + "SLOVENE" + "/BINARIES/",
+	                    		BinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
+	                    		BinaryReaderRandomization.PARAM_CORPUSLOCATION, "/home/dominikl/Dokumente/BA/CORPORA/",
+	                    		BinaryReaderRandomization.PARAM_LANGUAGE, "SLOVENE",
+	                    		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, "10000" ,
+	                    		BinaryReaderRandomization.PARAM_USE_BASELINE, "false",
+	                    		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"
 	                    ),
 
 	                     AnalysisEngineFactory.createEngineDescription(TestEval.class));

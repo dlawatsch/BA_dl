@@ -14,6 +14,7 @@ import java.util.Set;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Type;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
@@ -25,7 +26,9 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.w3c.dom.Element;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.resources.MappingProvider;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
@@ -52,6 +55,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
     @ConfigurationParameter(name = PARAM_USE_BASELINE, mandatory = true, defaultValue ="TEST")
     protected String baseline;
     
+    static MappingProvider posMappingProvider;
     static int currentDocument;
 	static Object[] allDocuments;
     Random randomGenerator;
@@ -76,7 +80,20 @@ public class BinaryReaderRandomization extends BinaryCasReader{
             currentTokenCount = 0;
             annotatedToken = 0;
             FileReader fr;
-
+            
+    		posMappingProvider = new MappingProvider();
+    		posMappingProvider
+    				.setDefault(
+    						MappingProvider.LOCATION,
+    						"/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/sl-SI.map");
+    		posMappingProvider.setDefault(MappingProvider.BASE_TYPE,
+    				POS.class.getName());
+    		posMappingProvider.setDefault("tagger.tagset", "default");
+    		posMappingProvider.setOverride(MappingProvider.LOCATION,
+    				"/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/sl-SI.map");
+    		posMappingProvider.setOverride(MappingProvider.LANGUAGE, "slovene");
+    		posMappingProvider.setOverride("sl-SI.map", "sl-SI.map");
+    		
 			try {
 				fr = new FileReader(corpusLocation + "/LANGUAGES/" + language + "/SEQUENCES/" + "SEQUENCE_ID.txt");
 	            BufferedReader br = new BufferedReader(fr);
@@ -121,9 +138,11 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	public void getNext(CAS cas) throws IOException, CollectionException {
 			super.getNext(cas);
 			realtokens = 0;
+			
 			try {
 				jcas = JCasFactory.createJCas();
 				jcas = cas.getJCas();
+				posMappingProvider.configure(jcas.getCas());
 				DocumentMetaData meta = DocumentMetaData.get(jcas);
 				System.out.println("[PROCESSING: " + meta.getDocumentId() + "]");
 				
@@ -182,6 +201,17 @@ public class BinaryReaderRandomization extends BinaryCasReader{
             unit.addToIndexes();
             
             TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
+           
+    		Type posTag = posMappingProvider.getTagType(token.getPos().getPosValue());
+
+    		POS pos = (POS) jcas.getCas().createAnnotation(posTag, token.getBegin(), token.getEnd());
+    		System.out.println(token.getPos().getPosValue());
+    
+    		
+            
+            
+
+            System.out.println(pos.getClass().getSimpleName());
             outcome.setOutcome(token.getPos().getPosValue());
             outcome.addToIndexes();
             realtokens++;

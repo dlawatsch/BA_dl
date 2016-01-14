@@ -513,6 +513,7 @@ _=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC
 :=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC
 |=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC
 ....................=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC
+Interp=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC
 -=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC
 svm1fn=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.V
 sfg1en=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.V

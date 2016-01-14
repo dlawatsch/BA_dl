@@ -148,7 +148,7 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		        		wordBeginn += word.length()+1;
 		        		wordEnd++;        		        		    				        		
 		                
-		                
+
 				        POS pos = new POS(jcas);
 				        pos.setPosValue(allPos.get(posCount));
 				        pos.addToIndexes();
