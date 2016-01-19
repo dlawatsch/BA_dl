@@ -30,8 +30,10 @@ public class CreateAndTrainModels {
 		boolean german = false;
 		boolean polnish = true;
 		boolean latin = false;
-		boolean slovene = true;
+		boolean slovene = false;
 		
-		TrainModels.process(corpusLocation, islandic, english, german, polnish, latin, slovene);		
+		boolean useCoarseGrained = true;
+		
+		TrainModels.process(corpusLocation, islandic, english, german, polnish, latin, slovene, useCoarseGrained);		
 	}
 }

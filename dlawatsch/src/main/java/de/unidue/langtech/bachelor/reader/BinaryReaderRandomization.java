@@ -55,6 +55,10 @@ public class BinaryReaderRandomization extends BinaryCasReader{
     @ConfigurationParameter(name = PARAM_USE_BASELINE, mandatory = true, defaultValue ="TEST")
     protected String baseline;
     
+    public static final String PARAM_COARSEGRAINED = "PARAM_COARSEGRAINED";
+    @ConfigurationParameter(name = PARAM_COARSEGRAINED, mandatory = true, defaultValue ="TEST")
+    protected String coarseGrained;
+    
     static MappingProvider posMappingProvider;
     static int currentDocument;
 	static Object[] allDocuments;
@@ -81,18 +85,37 @@ public class BinaryReaderRandomization extends BinaryCasReader{
             annotatedToken = 0;
             FileReader fr;
             
+            String posMappingString ="";
+            String overrider ="";
+            if(language.equals("ISLANDIC")){
+            	posMappingString = "/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/is.map";
+            	overrider = "is.map";
+            }else if(language.equals("SLOVENE")){
+            	posMappingString = "/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/sl-SI.map";
+            	overrider = "sl-SI.map";
+            }else if(language.equals("ENGLISH")){
+            	posMappingString = "/home/dominikl/Dokumente/BA/BA_git/dkpro-core/de.tudarmstadt.ukp.dkpro.core.api.lexmorph-asl/src/main/resources/de/tudarmstadt/ukp/dkpro/core/api/lexmorph/tagset/en-c5-pos.map";
+            	overrider = "en-c5-pos.map";   	
+            }else if(language.equals("GERMAN")){
+            	posMappingString = "/home/dominikl/Dokumente/BA/BA_git/dkpro-core/de.tudarmstadt.ukp.dkpro.core.api.lexmorph-asl/src/main/resources/de/tudarmstadt/ukp/dkpro/core/api/lexmorph/tagset/de-pos.map";
+            	overrider = "de-pos.map";           	
+            }else if(language.equals("POLNISH")){
+            	posMappingString = "/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/pl-ncp-simple.map";
+            	overrider = "de-pos.map";           	
+            }
+            
     		posMappingProvider = new MappingProvider();
     		posMappingProvider
     				.setDefault(
     						MappingProvider.LOCATION,
-    						"/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/sl-SI.map");
+    						"/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/is.map");
     		posMappingProvider.setDefault(MappingProvider.BASE_TYPE,
     				POS.class.getName());
     		posMappingProvider.setDefault("tagger.tagset", "default");
     		posMappingProvider.setOverride(MappingProvider.LOCATION,
-    				"/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/sl-SI.map");
-    		posMappingProvider.setOverride(MappingProvider.LANGUAGE, "slovene");
-    		posMappingProvider.setOverride("sl-SI.map", "sl-SI.map");
+    				posMappingString);
+    		posMappingProvider.setOverride(MappingProvider.LANGUAGE, language);
+    		posMappingProvider.setOverride(overrider, overrider);
     		
 			try {
 				fr = new FileReader(corpusLocation + "/LANGUAGES/" + language + "/SEQUENCES/" + "SEQUENCE_ID.txt");
@@ -200,19 +223,9 @@ public class BinaryReaderRandomization extends BinaryCasReader{
             unit.setSuffix(token.getCoveredText());
             unit.addToIndexes();
             
-            TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-           
-    		Type posTag = posMappingProvider.getTagType(token.getPos().getPosValue());
+            TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());    
 
-    		POS pos = (POS) jcas.getCas().createAnnotation(posTag, token.getBegin(), token.getEnd());
-    		System.out.println(token.getPos().getPosValue());
-    
-    		
-            
-            
-
-            System.out.println(pos.getClass().getSimpleName());
-            outcome.setOutcome(token.getPos().getPosValue());
+            outcome.setOutcome(getOutcome(token));
             outcome.addToIndexes();
             realtokens++;
             tokensInThis++;
@@ -221,6 +234,23 @@ public class BinaryReaderRandomization extends BinaryCasReader{
         System.out.println("[THIS DOCUMENT ANNOTATED: " + annotatedToken + "/" + currentTokenCount + "]");
 	}
 	
+
+	private String getOutcome(Token token) {
+		if(coarseGrained.equals("true")){
+			if(language.equals("ISLANDIC")){
+	            String post = token.getPos().getPosValue().replace("þ", "XX");
+	    		Type posTag = posMappingProvider.getTagType(post);
+	    		POS pos = (POS) jcas.getCas().createAnnotation(posTag, token.getBegin(), token.getEnd());
+	            return pos.getClass().getSimpleName();
+			}else{
+	    		Type posTag = posMappingProvider.getTagType(token.getPos().getPosValue());
+	    		POS pos = (POS) jcas.getCas().createAnnotation(posTag, token.getBegin(), token.getEnd());
+	            return pos.getClass().getSimpleName();				
+			}
+		}else{
+			return token.getPos().getPosValue();
+		}				
+	}
 
 	private void addBaselineAnnotations(Sentence sentence) {
         TextClassificationSequence sequence = new TextClassificationSequence(jcas, sentence.getBegin(), sentence.getEnd());

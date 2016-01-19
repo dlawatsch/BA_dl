@@ -65,7 +65,7 @@ static int i;
 static String corpus;
 static String modelOutputDir;
 
-public static void TrainAndSaveCRF(String cLoc, String languageCODE, String homeDir, String modelOutputFoldera, int i){
+public static void TrainAndSaveCRF(String cLoc, String languageCODE, String homeDir, String modelOutputFoldera, int i, boolean useCoarseGrained){
 	iteration = i;
 	System.out.println(i*10000 + " Token Iteration");
 	corpus = cLoc;
@@ -77,7 +77,12 @@ public static void TrainAndSaveCRF(String cLoc, String languageCODE, String home
 	i *= 10000;
 	modelOutputFolder = new File(modelOutputFoldera);
 	modelOutputFolder.mkdirs();
-	experimentName = languageCode + String.valueOf(i);
+	if(useCoarseGrained){
+		experimentName = languageCode + String.valueOf(i) + "COARSE";
+	}else{
+		experimentName = languageCode + String.valueOf(i) + "FINE";
+	}
+
 
 
 	ParameterSpace pSpace;
@@ -134,6 +139,7 @@ public static ParameterSpace getParameterSpace(String featureMode,
         		BinaryReaderRandomization.PARAM_LANGUAGE, languageCode,
         		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, String.valueOf(iteration * 10000) ,
         		BinaryReaderRandomization.PARAM_USE_BASELINE, "false",
+        		BinaryReaderRandomization.PARAM_COARSEGRAINED, "true",
         		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"));
 
 	ParameterSpace pSpace = new ParameterSpace(Dimension.createBundle(

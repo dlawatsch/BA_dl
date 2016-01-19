@@ -27,6 +27,7 @@ public class IcelandicPOSMappingFileCreator {
 			for(String a : loadedFd.getKeys()){
 				analysePOS(a);
 			}
+			punc.add("INTERP=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC");
 			
 			List<String> allMapping = new ArrayList<String>();
 			allMapping.addAll(adj);
@@ -60,50 +61,73 @@ public class IcelandicPOSMappingFileCreator {
 			//proper noun
 			if(pos.toLowerCase().endsWith("s")){
 				np.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NP");
+				if(pos.toLowerCase().contains("þ")){					
+					np.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NP");
+				}
 			}
 			//common noun
 			else{
 				 nn.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN");
+					if(pos.toLowerCase().contains("þ")){					
+						nn.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN");
+					}
 			}
 			
 		}else if(pos.toLowerCase().startsWith("l")){
 			//adjective
 			 	adj.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.ADJ");
+				if(pos.toLowerCase().contains("þ")){					
+					adj.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.ADJ");
+				}
 			
 		}else if(pos.toLowerCase().startsWith("a")){
 			//adverb
 			adv.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.ADV");
-			
+			if(pos.toLowerCase().contains("þ")){					
+				adv.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.ADV");
+			}
 		}else if(pos.toLowerCase().startsWith("f")){
 			//pronoun
 			pr.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PR");
-			
+			if(pos.toLowerCase().contains("þ")){					
+				pr.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PR");
+			}
 		}else if(pos.toLowerCase().startsWith("g")){
 			//article
 			art.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.ART");
-			
+			if(pos.toLowerCase().contains("þ")){					
+				art.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.ART");
+			}
 		}else if(pos.toLowerCase().startsWith("t")){
 			//numeric
 			card.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.CARD");
-			
+			if(pos.toLowerCase().contains("þ")){					
+				card.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.CARD");
+			}
 		}
 		else if(pos.toLowerCase().startsWith("s")){
 			//verb
 			 v.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.V");
-			
+				if(pos.toLowerCase().contains("þ")){					
+					v.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.V");
+				}
 		}
 		else if(pos.toLowerCase().startsWith("c")){
 			//conjunction
 			conj.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.CONJ");
-		
+			if(pos.toLowerCase().contains("þ")){					
+				conj.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.CONJ");
+			}
 		}else if(pos.toLowerCase().startsWith("e") || pos.startsWith("x")){
 			//foreign word or unclassified
 			o.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.O");
-			
+			if(pos.toLowerCase().contains("þ")){					
+				o.add(pos.replaceAll("þ", "XX")+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.O");
+			}
 		}else if(pos.toLowerCase().equals("Interp") || pos.length()==1 || pos.contains(".") || pos.contains("(") || pos.contains(")") || pos.contains("!") || pos.contains("?") || pos.contains("-") || pos.contains("»") || pos.contains(":")){
 			//punctuation
 			punc.add(pos+"=de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.PUNC");
-		}	
+		}
 	}
 }
 

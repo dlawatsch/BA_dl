@@ -71,18 +71,25 @@ public class TrainModels implements Constants{
 	static String corpus;
 	static String modelOutputDir;
 	
-	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene){
+	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene, boolean useCoarseGrained){
+		
 		if(islandic){
 			i = 0;
 			iteration = 1;
 			corpus = corpusLocation;
 			languageCode = "ISLANDIC";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
+			if(useCoarseGrained){
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_coarseGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/COARSE/";
+			}else{
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
+			}
+
 
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
 			}
 		}	
 		
@@ -90,12 +97,17 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "ENGLISH";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			if(useCoarseGrained){
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_coarseGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/COARSE/";
+			}else{
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
+			}
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
 			}	
 		}
 		
@@ -103,12 +115,17 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "GERMAN";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			if(useCoarseGrained){
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_coarseGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/COARSE/";
+			}else{
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
+			}
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
 			}	
 		}
 		
@@ -116,12 +133,17 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "POLNISH";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			if(useCoarseGrained){
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_coarseGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/COARSE/";
+			}else{
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
+			}
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
 			}	
 		}
 
@@ -129,12 +151,17 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "LATIN";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			if(useCoarseGrained){
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_coarseGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/COARSE/";
+			}else{
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
+			}
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
 			}	
 		}
 		
@@ -142,12 +169,17 @@ public class TrainModels implements Constants{
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "SLOVENE";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/";
+			if(useCoarseGrained){
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_coarseGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/COARSE/";
+			}else{
+				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
+				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
+			}
 			iteration = 1;
 
 			for(;iteration <= 10; iteration++){
-				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration);
+				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
 			}	
 		}
 

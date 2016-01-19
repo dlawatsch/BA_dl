@@ -22,10 +22,11 @@ import de.unidue.langtech.bachelor.reader.SloveneReader;
 	            SimplePipeline.runPipeline(
 	                    CollectionReaderFactory.createReader(
 	                    		BinaryReaderRandomization.class,
-	                       		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, "/home/dominikl/Dokumente/BA/CORPORA/" + "/LANGUAGES/" + "SLOVENE" + "/BINARIES/",
+	                       		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, "/home/dominikl/Dokumente/BA/CORPORA/" + "/LANGUAGES/" + "POLNISH" + "/BINARIES/",
 	                    		BinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
 	                    		BinaryReaderRandomization.PARAM_CORPUSLOCATION, "/home/dominikl/Dokumente/BA/CORPORA/",
-	                    		BinaryReaderRandomization.PARAM_LANGUAGE, "SLOVENE",
+	                    		BinaryReaderRandomization.PARAM_LANGUAGE, "POLNISH",
+	                    		BinaryReaderRandomization.PARAM_COARSEGRAINED, "true",
 	                    		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, "10000" ,
 	                    		BinaryReaderRandomization.PARAM_USE_BASELINE, "false",
 	                    		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"
