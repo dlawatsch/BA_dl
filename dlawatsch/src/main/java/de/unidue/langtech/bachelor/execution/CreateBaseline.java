@@ -1,5 +1,10 @@
 package de.unidue.langtech.bachelor.execution;
 
+import java.io.IOException;
+
+import org.apache.uima.UIMAException;
+import org.apache.uima.resource.ResourceInitializationException;
+
 import de.unidue.langtech.bachelor.pipelines.CreateBaselinePipeline;
 import de.unidue.langtech.bachelor.pipelines.TrainModels;
 
@@ -23,7 +28,19 @@ public class CreateBaseline {
 	boolean latin = false;
 	boolean slovene = true;
 	
-	CreateBaselinePipeline.process(corpusLocation, islandic, english, german, polnish, latin, slovene);	
+	boolean coarseGrained = false;
+	try {
+		CreateBaselinePipeline.process(corpusLocation, islandic, english, german, polnish, latin, slovene, coarseGrained);
+	} catch (ResourceInitializationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (UIMAException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}	
 	}
 }
 	

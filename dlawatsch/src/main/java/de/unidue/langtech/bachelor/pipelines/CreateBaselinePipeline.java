@@ -21,13 +21,18 @@ import static java.util.Arrays.asList;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.component.NoOpAnnotator;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.CollectionReaderFactory;
+import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import de.tudarmstadt.ukp.dkpro.core.api.frequency.util.ConditionalFrequencyDistribution;
@@ -51,6 +56,9 @@ import de.tudarmstadt.ukp.dkpro.tc.features.token.CurrentToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.NextToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.PreviousToken;
 import de.tudarmstadt.ukp.dkpro.tc.ml.ExperimentCrossValidation;
+import de.unidue.langtech.bachelor.Annotators.BaselineAnnotator;
+import de.unidue.langtech.bachelor.PipelineEngineFactories.TestEval;
+import de.unidue.langtech.bachelor.reader.BaselineBinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
 import de.unidue.langtech.bachelor.reader.NKJPReader;
@@ -72,145 +80,160 @@ public class CreateBaselinePipeline implements Constants{
 	static String corpus;
 	static String modelOutputDir;
 	public static ConditionalFrequencyDistribution<String, String> cfd;
-	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene){
-
+	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene, boolean coarseGrained) throws ResourceInitializationException, UIMAException, IOException{
+		
+		String coarse = "";
+		if(coarseGrained){
+			coarse = "true";
+		}else{
+			coarse = "false";
+		}
 		
 		if(islandic){
-			cfd = new ConditionalFrequencyDistribution<String, String>();
 			i = 0;
 			iteration = 1;
 			corpus = corpusLocation;
 			languageCode = "ISLANDIC";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
 
 		
 			for(;iteration <= 3; iteration++){
+				cfd = new ConditionalFrequencyDistribution<String, String>();
 				if(iteration == 1){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 1);
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(10000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(10000), coarse);
 				}
 				if(iteration == 2){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 5);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(50000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(50000), coarse);				
+					}
 				if(iteration == 3){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 10);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					}
 			}
 		}	
 		
 		if(english){
-			cfd = new ConditionalFrequencyDistribution<String, String>();
 			i = 0;
 			iteration = 1;
 			corpus = corpusLocation;
 			languageCode = "ENGLISH";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
-
 		
 			for(;iteration <= 3; iteration++){
+				cfd = new ConditionalFrequencyDistribution<String, String>();
 				if(iteration == 1){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 1);
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(10000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(10000), coarse);
 				}
 				if(iteration == 2){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 5);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(50000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(50000), coarse);				
+					}
 				if(iteration == 3){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 10);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					}
 			}
 		}
 		
 		if(german){
-			cfd = new ConditionalFrequencyDistribution<String, String>();
 			i = 0;
 			corpus = corpusLocation;
 			iteration = 1;
 			languageCode = "GERMAN";
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
-
 		
 			for(;iteration <= 3; iteration++){
+				cfd = new ConditionalFrequencyDistribution<String, String>();
 				if(iteration == 1){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 1);
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(10000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(10000), coarse);
 				}
 				if(iteration == 2){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 5);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(50000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(50000), coarse);				
+					}
 				if(iteration == 3){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 10);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					}
 			}
 		}
 		
 		if(polnish){
-			cfd = new ConditionalFrequencyDistribution<String, String>();
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "POLNISH";
 			iteration = 1;
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
-
 		
 			for(;iteration <= 3; iteration++){
+				cfd = new ConditionalFrequencyDistribution<String, String>();
 				if(iteration == 1){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 1);
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(10000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(10000), coarse);
 				}
 				if(iteration == 2){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 5);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(50000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(50000), coarse);				
+					}
 				if(iteration == 3){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 10);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					}
 			}
 		}
 
-		if(latin){
-			cfd = new ConditionalFrequencyDistribution<String, String>();
-			i = 0;
-			corpus = corpusLocation;
-			languageCode = "LATIN";
-			iteration = 1;
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
-
-		
-			for(;iteration <= 3; iteration++){
-				if(iteration == 1){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 1);
-				}
-				if(iteration == 2){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 5);
-				}
-				if(iteration == 3){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 10);
-				}
-			}
-		}
 		
 		if(slovene){
-			cfd = new ConditionalFrequencyDistribution<String, String>();
 			i = 0;
 			corpus = corpusLocation;
 			languageCode = "SLOVENE";
 			iteration = 1;
-			homeFolder = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/";
-			modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/BASELINE/" + String.valueOf(iteration*10000)+"_UNITS_MODEL/";
-
 		
 			for(;iteration <= 3; iteration++){
+				cfd = new ConditionalFrequencyDistribution<String, String>();
 				if(iteration == 1){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 1);
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(10000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(10000), coarse);
 				}
 				if(iteration == 2){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 5);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(50000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(50000), coarse);				
+					}
 				if(iteration == 3){
-					BaselineTrainAndSaveModell.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, 10);
-				}
+					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					}
 			}
 		}
+	}
+	
+	private static void startFrequencyCalculation(String corpusLocation, String languageCode, String maxToken, String coarse) throws ResourceInitializationException, UIMAException, IOException{				
+			SimplePipeline.runPipeline(
+	        CollectionReaderFactory.createReader(
+	        		BaselineBinaryReaderRandomization.class,
+	        		BaselineBinaryReaderRandomization.PARAM_SOURCE_LOCATION, corpus + "/LANGUAGES/" + languageCode + "/BINARIES/",
+	        		BaselineBinaryReaderRandomization.PARAM_PATTERNS, "FILE*.bin",
+	        		BaselineBinaryReaderRandomization.PARAM_CORPUSLOCATION, corpus,
+	        		BaselineBinaryReaderRandomization.PARAM_LANGUAGE, languageCode,
+	        		BaselineBinaryReaderRandomization.PARAM_COARSEGRAINED, coarse,
+	        		BaselineBinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, maxToken
+	        ),
+
+	         AnalysisEngineFactory.createEngineDescription(TestEval.class));	         
+	}
+	
+	private static void startBaselineEvaluation(String corpusLocation, String languageCode, String maxToken, String coarse) throws ResourceInitializationException, UIMAException, IOException{				
+			SimplePipeline.runPipeline(
+	        CollectionReaderFactory.createReader(
+	        		BaselineAnnotator.class,
+	        		BaselineAnnotator.PARAM_SOURCE_LOCATION, corpus + "/LANGUAGES/" + languageCode + "/BINARIES/",
+	        		BaselineAnnotator.PARAM_PATTERNS, "FILE*.bin",
+	        		BaselineAnnotator.PARAM_CORPUSLOCATION, corpus,
+	        		BaselineAnnotator.PARAM_LANGUAGE, languageCode,
+	        		BaselineAnnotator.PARAM_COARSEGRAINED, coarse,
+	        		BaselineAnnotator.PARAM_USE_X_MAX_TOKEN, maxToken
+	        ),
+
+         AnalysisEngineFactory.createEngineDescription(TestEval.class));	         
 	}
 }

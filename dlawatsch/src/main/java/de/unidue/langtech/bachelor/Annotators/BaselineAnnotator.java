@@ -1,9 +1,11 @@
-package de.unidue.langtech.bachelor.reader;
+package de.unidue.langtech.bachelor.Annotators;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,7 +42,7 @@ import de.unidue.langtech.bachelor.pipelines.BaselineTrainAndSaveModell;
 import de.unidue.langtech.bachelor.pipelines.CreateBaselinePipeline;
 import de.unidue.langtech.bachelor.type.SequenceID;
 
-public class BaselineBinaryReaderRandomization extends BinaryCasReader{
+public class BaselineAnnotator extends BinaryCasReader{
     public static final String PARAM_CORPUSLOCATION = "PARAM_CORPUSLOCATION";
     @ConfigurationParameter(name = PARAM_CORPUSLOCATION, mandatory = true, defaultValue ="TEST")
     protected String corpusLocation;
@@ -53,10 +55,10 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
     @ConfigurationParameter(name = PARAM_USE_X_MAX_TOKEN, mandatory = true, defaultValue ="TEST")
     protected String maxToken;
     
-    public static final String PARAM_COARSEGRAINED= "PARAM_COARSEGRAINED";
+    public static final String PARAM_COARSEGRAINED = "PARAM_COARSEGRAINED";
     @ConfigurationParameter(name = PARAM_COARSEGRAINED, mandatory = true, defaultValue ="TEST")
     protected String coarseGrained;
-    
+    static FrequencyDistribution<String> fd;
     static MappingProvider posMappingProvider;
     static int currentDocument;
 	static Object[] allDocuments;
@@ -68,33 +70,45 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
 	int realtokens;
     JCas jcas;
     int annotatedToken;
-    static FrequencyDistribution<String> fd;
-    static File outputfile;
-
+    static int correctItems;
+    static int allItems;
+    
 	public void initialize(UimaContext context)
             throws ResourceInitializationException
         {
             super.initialize(context);    
-            File dir = new File(corpusLocation + "/LANGUAGES/" + language + "/FREQUENCIES/");
-            dir.mkdirs();
-            
-            if(coarseGrained.equals("true")){
-                outputfile = new File(corpusLocation + "/LANGUAGES/" + language + "/FREQUENCIES/" + maxToken+"_FREQUENCIES_COARSE");
-            }else{
-                outputfile = new File(corpusLocation + "/LANGUAGES/" + language + "/FREQUENCIES/" + maxToken+"_FREQUENCIES_FINE");
-            }
-            
             allDocuments = getResources().toArray();
             currentDocument = 0;
-            fd = new FrequencyDistribution<String>();
-
+            
             randomGenerator = new Random();
             
             maximumToken = Integer.valueOf(maxToken);
             currentTokenCount = 0;
             annotatedToken = 0;
+            correctItems = 0;
+            allItems = 0;
             FileReader fr;
+            
+            File outputfile;
+            if(coarseGrained.equals("true")){
+                outputfile = new File(corpusLocation + "/LANGUAGES/" + language + "/FREQUENCIES/" + maxToken+"_FREQUENCIES_COARSE");
+            }else{
+                outputfile = new File(corpusLocation + "/LANGUAGES/" + language + "/FREQUENCIES/" + maxToken+"_FREQUENCIES_FINE");
+            }
 
+
+            fd = new FrequencyDistribution<String>();
+            try {
+            	fd.load(outputfile);
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            
+            
             String posMappingString ="";
             String overrider ="";
             if(language.equals("ISLANDIC")){
@@ -163,15 +177,37 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
 		if((currentDocument < allDocuments.length)){
 			return true;
 		}else{
-			fd.save(outputfile);
-			return false;
+			
+			File outputfile;
+            if(coarseGrained.equals("true")){
+                outputfile = new File(corpusLocation + "/LANGUAGES/" + language + "/BASELINE/" + maxToken+"_BASELINE_COARSE");
+            }else{
+                outputfile = new File(corpusLocation + "/LANGUAGES/" + language + "/BASELINE/" + maxToken+"_BASELINE_FINE");
+            }
+			double prozent = ((double)correctItems/(double)allItems) * 100;
+			String prozentstring = String.valueOf(prozent);
+			String correct = String.valueOf(correctItems);
+			String all = String.valueOf(allItems);
+		     try {
+			    	BufferedWriter output = new BufferedWriter(new FileWriter(outputfile, true));
+					output.write("Accuracy: " + prozentstring + "%");
+					output.write(System.getProperty("line.separator"));
+					output.write("( " + correct + " / " + all + " )");
+			 		output.flush();
+					output.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		        					
 		}
+				return false;
 	}
 	
 	@Override
 	public void getNext(CAS cas) throws IOException, CollectionException {
 			super.getNext(cas);
 			realtokens = 0;
+			
 			try {
 				jcas = JCasFactory.createJCas();
 				jcas = cas.getJCas();
@@ -184,6 +220,7 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
 				int mintoken = Integer.MAX_VALUE;
 				
 		        for (Sentence sentence : JCasUtil.select(jcas, Sentence.class)) {
+		        	
 		        	for (SequenceID sid : JCasUtil.selectCovering(jcas, SequenceID.class, sentence)){
 		        		if(sid.getNrOfTokens() < mintoken){
 		        			mintoken = sid.getNrOfTokens();
@@ -191,12 +228,16 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
 		        		}
 		        		if(randomizedSID.contains(sid.getID())){
 		        			randomizedSID.remove(sid.getID());
-		        			addFrequencies(sentence);
+		        			System.out.println("[ANNOTATING SENTENCE ID: " + sid.getID() + "]");
 		        			
+		        			addBaselineAnnotations(sentence);
 		        		}
 		        	}		        	
 		        }
-		        currentDocument++;		        
+		        currentDocument++;
+		        if(realtokens == 0 && hasNext() == true){
+		        	getNext(cas);	        	
+		        }
 
 
 			} catch (UIMAException e) {
@@ -210,12 +251,23 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
 	}
 
 
-	private void addFrequencies(Sentence sentence) {
+	private void addBaselineAnnotations(Sentence sentence) {
         int tokensInThis = 0;
         for (Token token : JCasUtil.selectCovered(jcas, Token.class, sentence)) {
-        	String outcome = getOutcome(token);
-        	CreateBaselinePipeline.cfd.addSample(token.getCoveredText(), outcome, 1);
-        	fd.addSample(outcome, 1);           
+        	
+            // will add the token content as a suffix to the ID of this unit 
+
+            String baselineOutcome = "";
+            try{
+                baselineOutcome = CreateBaselinePipeline.cfd.getFrequencyDistribution(token.getCoveredText()).getSampleWithMaxFreq();
+            }catch(Exception e){
+            	baselineOutcome = fd.getSampleWithMaxFreq();
+            }
+            System.out.println("GOLD: " + token.getPos().getPosValue() + " | " + "Pred.: " + baselineOutcome);
+            if(token.getPos().getPosValue().equals(baselineOutcome)){
+            	correctItems++;
+            }
+            allItems++;
             realtokens++;
             tokensInThis++;
         }
@@ -223,21 +275,4 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
         System.out.println("[THIS DOCUMENT ANNOTATED: " + annotatedToken + "/" + currentTokenCount + "]");
 	}
 
-
-	private String getOutcome(Token token) {
-		if(coarseGrained.equals("true")){
-			if(language.equals("ISLANDIC")){
-	            String post = token.getPos().getPosValue().replace("þ", "XX");
-	    		Type posTag = posMappingProvider.getTagType(post);
-	    		POS pos = (POS) jcas.getCas().createAnnotation(posTag, token.getBegin(), token.getEnd());
-	            return pos.getClass().getSimpleName();
-			}else{
-	    		Type posTag = posMappingProvider.getTagType(token.getPos().getPosValue());
-	    		POS pos = (POS) jcas.getCas().createAnnotation(posTag, token.getBegin(), token.getEnd());
-	            return pos.getClass().getSimpleName();				
-			}
-		}else{
-			return token.getPos().getPosValue();
-		}				
-	}
 }

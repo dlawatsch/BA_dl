@@ -21,7 +21,7 @@ import de.unidue.langtech.bachelor.reader.TigerConLLReader;
 
 public class CreateBinariesPipeline {
 	
-	public static void writeToBinJCas(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene) throws ResourceInitializationException, UIMAException, IOException{		
+	public static void writeToBinJCas(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene, boolean coarseGrained) throws ResourceInitializationException, UIMAException, IOException{		
 		
 		if(english){
 			String language = "ENGLISH";
