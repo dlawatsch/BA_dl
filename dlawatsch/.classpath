@@ -24,23 +24,15 @@
 	</classpathentry>
 	<classpathentry kind="src" path="/dkpro-tc-examples"/>
 	<classpathentry kind="src" path="/de.tudarmstadt.ukp.dkpro.core.io.imscwb-asl"/>
-	<classpathentry kind="lib" path="/home/dominik/.m2/repository/org/apache/uima/uimaj-core/2.8.1/uimaj-core-2.8.1.jar">
+	<classpathentry kind="src" path="/de.tudarmstadt.ukp.dkpro.core.io.tei-asl"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.apache.uima"/>
-			<attribute name="maven.artifactId" value="uimaj-core"/>
-			<attribute name="maven.version" value="2.8.1"/>
-			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/de.tudarmstadt.ukp.dkpro.core.io.tei-asl"/>
-	<classpathentry kind="lib" path="/home/dominik/.m2/repository/de/tudarmstadt/ukp/dkpro/core/de.tudarmstadt.ukp.dkpro.core.io.tei-asl/1.7.0/de.tudarmstadt.ukp.dkpro.core.io.tei-asl-1.7.0.jar">
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="de.tudarmstadt.ukp.dkpro.core"/>
-			<attribute name="maven.artifactId" value="de.tudarmstadt.ukp.dkpro.core.io.tei-asl"/>
-			<attribute name="maven.version" value="1.7.0"/>
-			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>

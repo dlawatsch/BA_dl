@@ -62,6 +62,7 @@ import de.unidue.langtech.bachelor.reader.BaselineBinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
 import de.unidue.langtech.bachelor.reader.NKJPReader;
+import de.unidue.langtech.bachelor.reader.PosAmbiguityEvaluator;
 
 
 /**
@@ -70,7 +71,10 @@ import de.unidue.langtech.bachelor.reader.NKJPReader;
  *
  */
 public class CreateBaselinePipeline implements Constants{
-	
+	/*
+	 * This baseline runs 3 times for each language with 10.000, 50.000 and 100.000 token 
+	 * to get a baseline learning curve 
+	 */
 	static String experimentName;
 	static File modelOutputFolder;
 	static String homeFolder;
@@ -109,6 +113,8 @@ public class CreateBaselinePipeline implements Constants{
 				if(iteration == 3){
 					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
 					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startPosAmbiguityEvaluation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+
 					}
 			}
 		}	
@@ -132,6 +138,8 @@ public class CreateBaselinePipeline implements Constants{
 				if(iteration == 3){
 					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
 					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startPosAmbiguityEvaluation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+
 					}
 			}
 		}
@@ -155,6 +163,8 @@ public class CreateBaselinePipeline implements Constants{
 				if(iteration == 3){
 					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
 					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startPosAmbiguityEvaluation(corpusLocation, languageCode, String.valueOf(100000), coarse);
+
 					}
 			}
 		}
@@ -178,6 +188,7 @@ public class CreateBaselinePipeline implements Constants{
 				if(iteration == 3){
 					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
 					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startPosAmbiguityEvaluation(corpusLocation, languageCode, String.valueOf(100000), coarse);
 					}
 			}
 		}
@@ -202,11 +213,19 @@ public class CreateBaselinePipeline implements Constants{
 				if(iteration == 3){
 					startFrequencyCalculation(corpusLocation, languageCode, String.valueOf(100000), coarse);
 					startBaselineEvaluation	(corpusLocation, languageCode, String.valueOf(100000), coarse);
+					startPosAmbiguityEvaluation(corpusLocation, languageCode, String.valueOf(100000), coarse);
 					}
 			}
 		}
 	}
 	
+	//POS ambiguity statistic only for 100.000 token as smaller amounts are not interesting	
+	private static void startPosAmbiguityEvaluation(String corpusLocation, String languageCode2, String count,
+			String coarse) throws IOException {
+		PosAmbiguityEvaluator.startEvaluation(corpusLocation, languageCode, count, coarse);
+	}
+
+	//create frequency distribution
 	private static void startFrequencyCalculation(String corpusLocation, String languageCode, String maxToken, String coarse) throws ResourceInitializationException, UIMAException, IOException{				
 			SimplePipeline.runPipeline(
 	        CollectionReaderFactory.createReader(
@@ -222,6 +241,7 @@ public class CreateBaselinePipeline implements Constants{
 	         AnalysisEngineFactory.createEngineDescription(TestEval.class));	         
 	}
 	
+	//actual baseline annotation process including statistics which are saved to hard drive
 	private static void startBaselineEvaluation(String corpusLocation, String languageCode, String maxToken, String coarse) throws ResourceInitializationException, UIMAException, IOException{				
 			SimplePipeline.runPipeline(
 	        CollectionReaderFactory.createReader(

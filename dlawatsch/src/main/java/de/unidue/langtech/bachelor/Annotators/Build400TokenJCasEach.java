@@ -2,10 +2,7 @@ package de.unidue.langtech.bachelor.Annotators;
 
 
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +23,11 @@ import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.unidue.langtech.bachelor.type.SequenceID;
-
+/*
+ * As there have been problems concerning computational time
+ * (see implementation chapter and discussion)
+ * the amount of words per jcas is reduced to 400 by this class
+ */
 public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 	
 	public static int sequenceID;
@@ -41,13 +41,14 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
     public static final String PARAM_LANGUAGE = "PARAM_LANGUAGE";
     @ConfigurationParameter(name = PARAM_LANGUAGE, mandatory = true, defaultValue ="TEST")
     protected String language;
+    
     List<JCas> allJCas = new ArrayList<JCas>();
-     
     String documentText;
     int sequenceIDcount;
     File file;
     Writer output;
 	int numberOfTokens;
+	
 	public void initialize(UimaContext context)
             throws ResourceInitializationException
         {
@@ -63,8 +64,14 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 		numberOfTokens = 0;
 		documentText = "";
 		sequenceID = 0;
-		try {
+		
 
+		try {
+			/*
+			 * until 400 words have been processed or the document end is reached
+			 * the sentences are stored in an array as well as pos and lemmas to
+			 * annotate them to a new jcas afterwards.
+			 */
         	for (Sentence sentance : JCasUtil.select(jcas, Sentence.class)) {
 				
 				if(numberOfTokens < 400 || sentance.getEnd() < jcas.getDocumentText().length()){						
@@ -73,7 +80,8 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 
 			        for (Token t : JCasUtil.selectCovered(jcas, Token.class, sentance)) {
 			        	numberOfTokens++;
-			        	allWords.add(t.getCoveredText());			        	
+			        	allWords.add(t.getCoveredText());	
+			        	//if the language has lemmas those have to be processed too
 					        if(t.getLemma() != null){
 					        	hasLemmas = true;
 					        	allLemma.add(t.getLemma().getCoveredText());					        	
@@ -83,7 +91,10 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 			        sentance.getCoveredText();					
 				}
 
-				
+				/*
+				 * if 400 tokens are reached they will be processed to a new jcas.
+				 * the current sentence gets included as well to not lose data
+				 */
 				if(numberOfTokens >= 400 || sentance.getEnd() == jcas.getDocumentText().length()){
 					documentText+= sentance.getCoveredText();					
 					allSentences.add(sentance.getCoveredText());
@@ -96,14 +107,16 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 					    allPOS.add(t.getPos().getPosValue());    					        					                 					             
 			        }   
 			        annotationProcess(documentText);
-
-			}
-        }
-	}catch(Exception e){
-		e.printStackTrace();
+				}
+        	}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
-}
 	
+	/*
+	 * a new jcas is created and annotated with the 400 tokens from above
+	 */
 	private void annotationProcess(String txt) {
 		try {
 			JCas out = JCasFactory.createJCas();
@@ -153,19 +166,28 @@ public class Build400TokenJCasEach extends JCasAnnotator_ImplBase{
 	            }  
 	        }
 	        
+	        /*
+	         * all arrays are cleaned to be ready for the next document
+	         */
 			allWords.clear();
 			allLemma.clear();
 			allPOS.clear();
 			allSentences.clear();
 			documentText = "";
 			numberOfTokens = 0;
-			if(language.equals("GERMAN") || language.equals("LATIN")){
+			
+			/*
+			 * Because the german corpus contains only 1 big file it has to be handled seperately
+			 * because this file is that big that storing all newly created JCas's first and write
+			 * them to Binary Files later would exceed Memory Limit of 9gb! 
+			 * Therefore, it gets directly saved as Binary (which is not a nice method :/ )
+			 */
+			if(language.equals("GERMAN")){
 				SequenceIdAnnotator.processSingleFile(out);
 		        System.out.println(meta.getDocumentId() + "PROCESSING");
 
 			}else{
 				allJcas.add(out);
-
 			}
 		} catch (UIMAException e) {
 			// TODO Auto-generated catch block

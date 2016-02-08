@@ -35,7 +35,6 @@ import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
 import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
-import de.unidue.langtech.bachelor.pipelines.BaselineTrainAndSaveModell;
 import de.unidue.langtech.bachelor.type.SequenceID;
 
 public class BinaryReaderRandomization extends BinaryCasReader{
@@ -49,14 +48,10 @@ public class BinaryReaderRandomization extends BinaryCasReader{
     
     public static final String PARAM_USE_X_MAX_TOKEN = "PARAM_USE_X_MAX_TOKEN";
     @ConfigurationParameter(name = PARAM_USE_X_MAX_TOKEN, mandatory = true, defaultValue ="TEST")
-    protected String maxToken;
-    
-    public static final String PARAM_USE_BASELINE = "PARAM_USE_BASELINE";
-    @ConfigurationParameter(name = PARAM_USE_BASELINE, mandatory = true, defaultValue ="TEST")
-    protected String baseline;
+    protected String maxToken;  
     
     public static final String PARAM_COARSEGRAINED = "PARAM_COARSEGRAINED";
-    @ConfigurationParameter(name = PARAM_COARSEGRAINED, mandatory = true, defaultValue ="TEST")
+    @ConfigurationParameter(name = PARAM_COARSEGRAINED, mandatory = true, defaultValue ="false")
     protected String coarseGrained;
     
     static MappingProvider posMappingProvider;
@@ -66,7 +61,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	List<String> allSequenceIDs = new ArrayList<String>();
 	int currentTokenCount;
 	int maximumToken;
-	Set<Integer> randomizedSID = new HashSet<Integer>();
+	public Set<Integer> randomizedSID = new HashSet<Integer>();
 	int realtokens;
     JCas jcas;
     int annotatedToken;
@@ -125,8 +120,18 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 	            	allSequenceIDs.add(currentline);
 	            }
 	            br.close();
-
-	            while(currentTokenCount <= maximumToken){
+	            int allToken = 0;
+	            for(String l : allSequenceIDs){
+	            	String[] parts = l.split(" ");
+	            	allToken += Integer.valueOf(parts[1]);
+	            }
+	            
+	            if(maximumToken > allToken){
+	            	System.out.println("[NOT ENOUGH TOKEN IN DOCUMENT! " + allToken + " AVAILABLE | " + maximumToken + " CHOSEN]");
+	            	System.out.println("[REDUCED USE_X_MAX_TOKEN TO " + allToken+"]");
+	            	maximumToken = allToken;
+	            }
+	            while(currentTokenCount < maximumToken){
 		            int index = randomGenerator.nextInt(allSequenceIDs.size());
 		            String currentSID = allSequenceIDs.get(index);
 		            String[] parts = currentSID.split(" ");
@@ -183,12 +188,7 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 		        		if(randomizedSID.contains(sid.getID())){
 		        			randomizedSID.remove(sid.getID());
 		        			System.out.println("[ANNOTATING SENTENCE ID: " + sid.getID() + "]");
-		        			if(baseline.equals("false")){
-			        			addAnnotations(sentence);
-		        			}else{
-		        				addBaselineAnnotations(sentence);
-		        			}
-		        			
+			        			addAnnotations(sentence);	        			
 		        		}
 		        	}		        	
 		        }
@@ -251,31 +251,4 @@ public class BinaryReaderRandomization extends BinaryCasReader{
 			return token.getPos().getPosValue();
 		}				
 	}
-
-	private void addBaselineAnnotations(Sentence sentence) {
-        TextClassificationSequence sequence = new TextClassificationSequence(jcas, sentence.getBegin(), sentence.getEnd());
-        sequence.addToIndexes();
-        int tokensInThis = 0;
-        for (Token token : JCasUtil.selectCovered(jcas, Token.class, sentence)) {
-            TextClassificationUnit unit = new TextClassificationUnit(jcas, token.getBegin(), token.getEnd());
-
-            // will add the token content as a suffix to the ID of this unit 
-            unit.setSuffix(token.getCoveredText());
-            unit.addToIndexes();
-            String baselineOutcome = "";
-            try{
-                baselineOutcome = BaselineTrainAndSaveModell.cfd.getFrequencyDistribution(token.getCoveredText()).getSampleWithMaxFreq();
-            }catch(Exception e){
-            	baselineOutcome = token.getPos().getPosValue();
-            }
-            TextClassificationOutcome outcome = new TextClassificationOutcome(jcas, token.getBegin(), token.getEnd());
-            outcome.setOutcome(baselineOutcome);
-            outcome.addToIndexes();
-            realtokens++;
-            tokensInThis++;
-        }
-        annotatedToken += tokensInThis;
-        System.out.println("[THIS DOCUMENT ANNOTATED: " + annotatedToken + "/" + currentTokenCount + "]");
-	}
-
 }

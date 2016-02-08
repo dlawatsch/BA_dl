@@ -1,0 +1,28 @@
+Dies	1
+ist	2
+ein	3
+erster	4
+Test	5
+.	6
+										
+Dies	7
+ist	8
+ein	9
+zweiter	10
+Test	11
+.	12	
+										
+Dies	13
+ist	14
+ein	15
+dritter	16
+Test	17
+.	18
+										
+Dies	19
+ist	20
+ein	21
+vierter	22
+Test	23
+.	24											
+														

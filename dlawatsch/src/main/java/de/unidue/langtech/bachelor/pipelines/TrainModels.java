@@ -17,42 +17,12 @@
  ******************************************************************************/
 package de.unidue.langtech.bachelor.pipelines;
 
-import static java.util.Arrays.asList;
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.apache.uima.analysis_engine.AnalysisEngineDescription;
-import org.apache.uima.fit.component.NoOpAnnotator;
-import org.apache.uima.resource.ResourceInitializationException;
 
-import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
-import de.tudarmstadt.ukp.dkpro.core.io.tei.TeiReader;
-import de.tudarmstadt.ukp.dkpro.core.io.text.TextReader;
-import de.tudarmstadt.ukp.dkpro.lab.Lab;
-import de.tudarmstadt.ukp.dkpro.lab.task.BatchTask.ExecutionPolicy;
-import de.tudarmstadt.ukp.dkpro.lab.task.Dimension;
-import de.tudarmstadt.ukp.dkpro.lab.task.ParameterSpace;
 import de.tudarmstadt.ukp.dkpro.tc.core.Constants;
-import de.tudarmstadt.ukp.dkpro.tc.crfsuite.CRFSuiteAdapter;
-import de.tudarmstadt.ukp.dkpro.tc.crfsuite.CRFSuiteBatchCrossValidationReport;
-import de.tudarmstadt.ukp.dkpro.tc.crfsuite.task.serialization.SaveModelCRFSuiteBatchTask;
-import de.tudarmstadt.ukp.dkpro.tc.examples.io.BrownCorpusReader;
-import de.tudarmstadt.ukp.dkpro.tc.features.length.NrOfCharsUFE;
-import de.tudarmstadt.ukp.dkpro.tc.features.ngram.LuceneCharacterNGramUFE;
-import de.tudarmstadt.ukp.dkpro.tc.features.ngram.LuceneNGramUFE;
-import de.tudarmstadt.ukp.dkpro.tc.features.style.IsSurroundedByCharsUFE;
-import de.tudarmstadt.ukp.dkpro.tc.features.token.CurrentToken;
-import de.tudarmstadt.ukp.dkpro.tc.features.token.NextToken;
-import de.tudarmstadt.ukp.dkpro.tc.features.token.PreviousToken;
-import de.tudarmstadt.ukp.dkpro.tc.ml.ExperimentCrossValidation;
-import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
-import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
-import de.unidue.langtech.bachelor.reader.NKJPReader;
+
 
 
 /**
@@ -61,7 +31,11 @@ import de.unidue.langtech.bachelor.reader.NKJPReader;
  *
  */
 public class TrainModels implements Constants{
-	
+	/*
+	 * This class starts the training of the models. 10 iterations are needed
+	 * for the learning curve, adding 10.000 more tokens at each iteration
+	 * until 100.000 tokens are the last iteration.
+	 */
 	static String experimentName;
 	static File modelOutputFolder;
 	static String homeFolder;
@@ -71,7 +45,7 @@ public class TrainModels implements Constants{
 	static String corpus;
 	static String modelOutputDir;
 	
-	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene, boolean useCoarseGrained){
+	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean slovene, boolean useCoarseGrained){
 		
 		if(islandic){
 			i = 0;
@@ -85,8 +59,6 @@ public class TrainModels implements Constants{
 				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
 				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
 			}
-
-
 
 			for(;iteration <= 10; iteration++){
 				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
@@ -147,23 +119,6 @@ public class TrainModels implements Constants{
 			}	
 		}
 
-		if(latin){
-			i = 0;
-			corpus = corpusLocation;
-			languageCode = "LATIN";
-			if(useCoarseGrained){
-				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_coarseGrained/";
-				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/COARSE/";
-			}else{
-				modelOutputDir = corpusLocation + "/LANGUAGES/" + languageCode + "/MODELS/" + "100000_UNITS_MODEL_fineGrained/";
-				homeFolder = corpusLocation + "/LANGUAGES/EVALUATION/FINE/";
-			}
-			iteration = 1;
-
-			for(;iteration <= 10; iteration++){
-				TrainAndSaveNewModelCRF.TrainAndSaveCRF(corpusLocation, languageCode, homeFolder, modelOutputDir, iteration, useCoarseGrained);
-			}	
-		}
 		
 		if(slovene){
 			i = 0;

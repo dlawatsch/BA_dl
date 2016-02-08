@@ -2,35 +2,21 @@ package de.unidue.langtech.bachelor.Annotators;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-import org.apache.poi.util.SystemOutLogger;
-import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
-import org.apache.uima.fit.factory.JCasFactory;
-import org.apache.uima.fit.util.JCasUtil;
 
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.springframework.util.SystemPropertyUtils;
 
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasWriter;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
-import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
-import de.unidue.langtech.bachelor.type.SequenceID;
-
+/*
+ * Saves the jcas as binary
+ */
 public class WriteBinJcas extends JCasAnnotator_ImplBase{
 
     public static final String PARAM_LANGUAGE = "PARAM_LANGUAGE";
@@ -43,11 +29,16 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
+		/*
+		 * again, polish depicts the generalized approach
+		 * whereas the other languages have to be handled 
+		 * differently because of the problems occured (see BA chapter 5)
+		 */
 		if(language.equals("POLNISH")){
-		UUID uniqueID = UUID.randomUUID();
-		
-    	DocumentMetaData meta = DocumentMetaData.get(jcas);
-    	meta.setDocumentId("FILE_" + String.valueOf(uniqueID));
+			UUID uniqueID = UUID.randomUUID();
+			
+	    	DocumentMetaData meta = DocumentMetaData.get(jcas);
+	    	meta.setDocumentId("FILE_" + String.valueOf(uniqueID));
 			try {
 				generateBinJCas(jcas);
 			} catch (ResourceInitializationException e) {
@@ -68,12 +59,13 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 						e.printStackTrace();
 					}
 	        }
+	        //clear this array to be empty at next iteration to prevent double processing of same files
 	        Build400TokenJCasEach.allJcas.clear();
 
 		}
 	
 	}
-
+	
 	private void generateBinJCas(JCas out) throws ResourceInitializationException, AnalysisEngineProcessException {
 	      AnalysisEngine writer = createEngine(
 	                BinaryCasWriter.class, 
@@ -86,6 +78,7 @@ public class WriteBinJcas extends JCasAnnotator_ImplBase{
 	        writer.collectionProcessComplete();
 	}
 	
+	//method for german, used in sequenceIDannotator class
 	public static void createBinariesOutOfSingleFile(JCas jcas){
 		UUID uniqueID = UUID.randomUUID();
 		

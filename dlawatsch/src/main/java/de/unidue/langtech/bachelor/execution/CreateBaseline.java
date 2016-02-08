@@ -21,16 +21,15 @@ public class CreateBaseline {
 	 * if you dont wish those
 	 * corpora to be processed to Binaries
 	 */
-	boolean islandic = false;
-	boolean english = false;
-	boolean german = false;
-	boolean polnish = false;
-	boolean latin = false;
+	boolean islandic = true;
+	boolean english = true;
+	boolean german = true;
+	boolean polnish = true;
 	boolean slovene = true;
 	
-	boolean coarseGrained = false;
+	boolean coarseGrained = true;
 	try {
-		CreateBaselinePipeline.process(corpusLocation, islandic, english, german, polnish, latin, slovene, coarseGrained);
+		CreateBaselinePipeline.process(corpusLocation, islandic, english, german, polnish, slovene, coarseGrained);
 	} catch (ResourceInitializationException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

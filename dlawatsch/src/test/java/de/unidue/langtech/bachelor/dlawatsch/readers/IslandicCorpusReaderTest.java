@@ -1,4 +1,4 @@
-package de.unidue.langtech.bachelor.dlawatsch;
+package de.unidue.langtech.bachelor.dlawatsch.readers;
 
 import static org.junit.Assert.assertEquals;
 

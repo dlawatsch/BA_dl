@@ -1,42 +1,30 @@
 package de.unidue.langtech.bachelor.reader;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.collection.CollectionException;
-import org.apache.uima.fit.component.JCasCollectionReader_ImplBase;
-import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
-import org.w3c.dom.Element;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
-import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resource;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import de.tudarmstadt.ukp.dkpro.core.api.resources.ResourceUtils;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
-
+/**
+ * Reader for the Icelandic MIM-Gold Corpus
+ */
 
 public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		{
-    /**
-     * Input file
-     */
+
 
     private String currentSentence;
     private int sentenceCount;
@@ -63,7 +51,10 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 	}
 	
     /*
-     * true, if there is a next document, false otherwise
+     * true, if there is a next document and upper bound has not been reached, 
+     * false otherwise
+     * the upperboundchecker class checks if the upper bound is reached
+     * and changes the boolean in this class 
      */
 	public boolean hasNext() throws IOException, CollectionException {
 		if((currentDocument < allDocuments.length) && !reachedUpperBound){
@@ -87,6 +78,10 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 		String sentence = "";
         List<String> sentences = new ArrayList<String>();
         
+        /*
+         * The corpus consists of one word plus its pos tag 
+         * per line and empty lines split sentences 
+         */
 		try{
 				for(String line : lines){
 					if(line.startsWith("\t")){
@@ -101,24 +96,37 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				List<String> cleanedSentences = new ArrayList<String>();
 				List<String> allPos = new ArrayList<String>();
 				List<String> allWords = new ArrayList<String>();
+				
+				/*
+				 * Split the lines contained in sentences array 
+				 * to extract word and POS tag
+				 */
 				for(String sentenceB : sentences){
 					String[] parts = sentenceB.split("\n");
 					String actualSentence = "";
 					
 					for(String part : parts){
 						String[] wordPlusPOS = part.split("\t");
-							if(wordPlusPOS.length == 2){
-			                documentText += wordPlusPOS[0] + " ";
-			                allWords.add(wordPlusPOS[0]);
-			                if(wordPlusPOS[1].equals(",")){
-			                	allPos.add("Interp");
-			                }else if(wordPlusPOS[1].contains(",") && wordPlusPOS[1].length()>1){
-			                allPos.add(wordPlusPOS[1].replaceAll(",",""));
-			                }else{
-			                	allPos.add(wordPlusPOS[1]);
-			                }
-			                actualSentence += wordPlusPOS[0] + " ";
-							}
+						if(wordPlusPOS.length == 2){
+								//Whitespaces are needed for building correct sentences
+				                documentText += wordPlusPOS[0] + " ";
+				                allWords.add(wordPlusPOS[0]); 
+				                
+				                /* 
+				                 * semicolons have to be handled in a special way
+				                 * because otherwise they would cause errors later on
+				                 */ 				                
+				                if(wordPlusPOS[1].equals(",")){
+				                	allPos.add("Interp");
+				                	
+				                }else if(wordPlusPOS[1].contains(",") && wordPlusPOS[1].length()>1){
+				                	allPos.add(wordPlusPOS[1].replaceAll(",",""));
+				                
+				                }else{
+				                	allPos.add(wordPlusPOS[1]);
+				                }
+				                actualSentence += wordPlusPOS[0] + " ";
+						}
 					}
 					cleanedSentences.add(actualSentence);	
 				}
@@ -154,10 +162,8 @@ public class IslandicCorpusReader extends JCasResourceCollectionReader_ImplBase
 				        pos.addToIndexes();
 				        
 				        token.setPos(pos);
-				        token.addToIndexes();  
-				        
+				        token.addToIndexes();  		        
 				         
-//		                System.out.println(token.getCoveredText() + " " + token.getPos().getPosValue());
 		        		posCount++;             		
 		            }  
 

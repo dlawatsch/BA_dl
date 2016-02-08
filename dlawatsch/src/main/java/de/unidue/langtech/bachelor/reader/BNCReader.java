@@ -116,8 +116,10 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		//iterates over all segments of a sentence
 		for(int i = 0; i < allNodesFromCurrentSentenceNodes.getLength(); i++){
 			Node current = allNodesFromCurrentSentenceNodes.item(i);
+			
 			if(current.getNodeName().equals("hi")){
 				NodeList currentWordNodeList = current.getChildNodes();
+				
 					for(int z = 0; z < currentWordNodeList.getLength(); z++){
 						Node c = currentWordNodeList.item(z);
 						if(c.getNodeName().equals("w")){
@@ -139,7 +141,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 						}
 					}
 				}	
-				//actual words are nodes in "fs" xml types
+				//actual words are nodes in "w" xml types
 				else if(current.getNodeName().equals("w")){
 					String lemma = getAttributeString(current, "hw");
 					String pos = getAttributeString(current, "c5");
@@ -149,6 +151,7 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 					allLemma.add(lemma);
 					cleanedSentence += word + " ";
 				}
+				//Punctuation are stored in "c" xml types
 				else if(current.getNodeName().equals("c")){
 					String pos = getAttributeString(current, "c5");
 					String word = current.getTextContent().trim();
@@ -169,7 +172,6 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 	
 	private void annotationProcess(JCas jcas, String documentText) {
 		jcas.setDocumentText(documentText);
-		//System.out.println(documentText);
 		int sentenceBeginn = 0;
 		int sentenceEnd = 0;
 		
@@ -201,8 +203,6 @@ public class BNCReader extends JCasResourceCollectionReader_ImplBase{
 		        POS pos = new POS(jcas);
 		        pos.setPosValue(allPOS.get(posCount));
 		        pos.addToIndexes();
-		        //VERB						//VVFIN
-		        String simpleName = pos.getClass().getSimpleName();
 		        
 		        token.setPos(pos);
 		        token.setLemma(lemma);

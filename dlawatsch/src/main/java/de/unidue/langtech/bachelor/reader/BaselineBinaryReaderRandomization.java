@@ -163,6 +163,7 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
 		if((currentDocument < allDocuments.length)){
 			return true;
 		}else{
+        	CreateBaselinePipeline.cfd.setFrequencyDistribution("POS", fd);
 			fd.save(outputfile);
 			return false;
 		}
@@ -215,7 +216,8 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
         for (Token token : JCasUtil.selectCovered(jcas, Token.class, sentence)) {
         	String outcome = getOutcome(token);
         	CreateBaselinePipeline.cfd.addSample(token.getCoveredText(), outcome, 1);
-        	fd.addSample(outcome, 1);           
+        	fd.addSample(outcome, 1);   
+        	
             realtokens++;
             tokensInThis++;
         }

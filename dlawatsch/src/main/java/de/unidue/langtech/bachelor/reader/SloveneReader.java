@@ -70,7 +70,6 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 		allLemma.clear();
 		allPOS.clear();
 		allSentences.clear();
-		// TODO Auto-generated method stub
 		Resource nextFile = nextFile();
 		System.out.println(nextFile.getLocation());
 		currentFileName = nextFile;
@@ -145,7 +144,6 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
 	
 	private void annotationProcess(JCas jcas, String documentText) {
 		jcas.setDocumentText(documentText);
-		//System.out.println(documentText);
 		int sentenceBeginn = 0;
 		int sentenceEnd = 0;
 		
@@ -184,7 +182,6 @@ public class SloveneReader extends JCasResourceCollectionReader_ImplBase{
                 
         		posCount++;                		
             }
-
         }
 	}
 }

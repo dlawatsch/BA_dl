@@ -26,10 +26,10 @@ import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
+/**
+ * Reader for the Polish National Corpus
+ */
 public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
     //to determine the amount of all documents some variables are needed here
     static int currentDocument;
@@ -106,6 +106,11 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		currentDocument++;
 	}
 
+	/*
+	 * Please have a look at the ann_morphosyntax.xml files
+	 * of the corpus to see how it is structured.
+	 * To extract the information needed many child nodes have to be build.
+	 */
 	private String buildSentences(Node sentence) {
 		//getting all segments of a single sentence
 		NodeList allNodesFromCurrentSentenceNodes = sentence.getChildNodes();
@@ -119,7 +124,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 			for(int j = 0; j < sentenceSegmentNodes.getLength(); j++){
 				Node current = sentenceSegmentNodes.item(j);
 				
-				//actual words are nodes in "fs" xml types
+				//actual words are nodes in "fs" xml structures
 				if(current.getNodeName().equals("fs")){
 					NodeList currentWordNodeList = current.getChildNodes();
 															
@@ -133,6 +138,7 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 							NodeList wordValue = c.getChildNodes();
 							String attribute = getAttributeString(currentWordNodeList.item(z), "name");
 							
+							//get the word
 							if(attribute.equals("orth")){
 								for(int o = 0; o < wordValue.getLength(); o++){
 									if(testNodeString(wordValue.item(o).getNodeName())){
@@ -145,14 +151,19 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 							
 							String lemmatmp = "";
 							if(attribute.equals("disamb")){
+								
 								for(int o = 0; o < wordValue.getLength(); o++){
+									
 									if(wordValue.item(o).getNodeType() == Node.ELEMENT_NODE){
 										NodeList xx = wordValue.item(o).getChildNodes();
+										
 										if(wordValue.item(o).getNodeName().equals("fs")){
 											for(int oo = 0; oo < xx.getLength(); oo++){
 												if(xx.item(oo).getNodeType() == Node.ELEMENT_NODE){	
 													NodeList xy = xx.item(oo).getChildNodes();
 													String interpretation = getAttributeString(xx.item(oo), "name");
+													
+													//get the lemma and the POS
 													if(interpretation.equals("interpretation")){
 														String lemma = xx.item(oo).getTextContent().trim();	
 														String[] parts = lemma.split(":");
@@ -161,10 +172,12 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 														}else{
 															lemmatmp = parts[0];
 														}
+														
 														String pos = "";
 														for(int ii = 1; ii<parts.length-1; ii++){
 															pos += parts[ii] + ":";
 														}
+														
 														pos+=parts[parts.length-1];
 														allLemma.add(lemmatmp);
 														allPOS.add(pos);
@@ -184,13 +197,14 @@ public class NKJPReader extends JCasResourceCollectionReader_ImplBase{
 		return cleanedSentence;
 	}
 	
-
+	//if the xml type equals "string" then it contains a word, lemma or POS
 	private boolean testNodeString(String string) {
 		if(string.equals("string")){
 			return true;
 		}else return false;
 	}
 
+	//get the name of the xml attribute
 	private String getAttributeString(Node item, String attributename) {
 		Element element = (Element) item;
 		Attr attrName = element.getAttributeNode(attributename);

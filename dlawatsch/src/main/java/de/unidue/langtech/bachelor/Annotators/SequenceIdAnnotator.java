@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
-import java.util.UUID;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -23,7 +21,9 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.unidue.langtech.bachelor.type.SequenceID;
 
-
+/*
+ * This class is needed for randomization of sentences
+ */
 
 public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
     public static final String PARAM_CORPUSLOCATION = "PARAM_CORPUSLOCATION";
@@ -38,6 +38,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
     int sequenceIDcount;
     static File file;
     static Writer output;
+    
 	public void initialize(UimaContext context)
             throws ResourceInitializationException
         {
@@ -53,43 +54,51 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
     
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		/*
+		 * Polish Corpus has many files already and therefore no new Jcas's had to be 
+		 * created and therefore its JCas's are handled in a normal way.
+		 * This is the generalized way and is suitable for further research.
+		 */
 		if(language.equals("POLNISH")){
-        try {
-			output = new BufferedWriter(new FileWriter(file, true));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-		for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
-			int numberOfTokens = 0;
-			SequenceID sid = new SequenceID(jcas);
-			sid.setBegin(s.getBegin());
-			sid.setEnd(s.getEnd());
-			sid.setID(sequenceIDcount);
-			
-			for (Token t : JCasUtil.selectCovered(jcas, Token.class, s)){
-				numberOfTokens++;
+	        try {
+				output = new BufferedWriter(new FileWriter(file, true));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			
-			sid.setNrOfTokens(numberOfTokens);
-			sid.addToIndexes();
-			
-			addToFile(sid.getID() + " " + sid.getNrOfTokens());
-			sequenceIDcount++;
-		}
-		try {
-			output.flush();
-			output.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(language.equals("GERMAN") || language.equals("LATIN")){
-			WriteBinJcas.createBinariesOutOfSingleFile(jcas);
-		}
+	        
+	        //writes "ID	NrOfToken" per line into the "SEQUENCE_IDs.txt"
+			for (Sentence s : JCasUtil.select(jcas, Sentence.class)) {
+				int numberOfTokens = 0;
+				SequenceID sid = new SequenceID(jcas);
+				sid.setBegin(s.getBegin());
+				sid.setEnd(s.getEnd());
+				sid.setID(sequenceIDcount);
+				
+				for (Token t : JCasUtil.selectCovered(jcas, Token.class, s)){
+					numberOfTokens++;
+				}
+				
+				sid.setNrOfTokens(numberOfTokens);
+				sid.addToIndexes();
+				
+				addToFile(sid.getID() + " " + sid.getNrOfTokens());
+				sequenceIDcount++;
+			}
+			try {
+				output.flush();
+				output.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else{
+			/*
+			 * All other corpora have to be handled with help of the 
+			 * Build400TokenJCasEach class where the newly generated
+			 * Jcas's are stored.
+			 */
 	        try {
 				output = new BufferedWriter(new FileWriter(file, true));
 		        for(JCas out : Build400TokenJCasEach.allJcas){
@@ -111,7 +120,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 						addToFile(sid.getID() + " " + sid.getNrOfTokens());
 						sequenceIDcount++;									
 					}
-					}		        	
+				}		        	
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,16 +141,18 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 
 	private static void addToFile(String string) {
 		try {
-//			System.out.println(string);			
 			output.write(string);
 			output.write(System.getProperty("line.separator"));
 	        
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 	}
 	
+	/*
+	 * This method is for the german corpus as mentioned in the Build400TokenJCas class
+	 * to prevent GC Limit Overhead!
+	 */
 	public static void processSingleFile(JCas jcas){
         try {
 			output = new BufferedWriter(new FileWriter(file, true));
@@ -165,7 +176,7 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 			sid.addToIndexes();
 			
 			addToFile(sid.getID() + " " + sid.getNrOfTokens());
-			//sequenceIDcount++;	
+			//sequenceIDcount++ exclusively for german;	
 			Build400TokenJCasEach.sequenceID++;
 		}
 		try {
@@ -175,6 +186,10 @@ public class SequenceIdAnnotator extends JCasAnnotator_ImplBase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		/*
+		 * really not nice to hand them directly to the binary writer
+		 * but as already mentioned this is how the GC limit overhead can be prevented
+		 */
 		WriteBinJcas.createBinariesOutOfSingleFile(jcas);	
 	}
 }

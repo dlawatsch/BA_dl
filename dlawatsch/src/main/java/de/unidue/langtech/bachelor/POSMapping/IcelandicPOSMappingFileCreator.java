@@ -7,6 +7,12 @@ import java.util.List;
 
 import de.tudarmstadt.ukp.dkpro.core.api.frequency.util.FrequencyDistribution;
 
+/*
+ * Load the created frequency distributions
+ * that have been created at the baseline processing
+ * and get all different pos tags and do the mapping.
+ * Results are presented on the console and have to be saved manually
+ */
 public class IcelandicPOSMappingFileCreator {
 	public static List<String> adj = new ArrayList<String>();
 	public static List<String> adv = new ArrayList<String>();

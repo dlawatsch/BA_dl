@@ -1,44 +1,33 @@
 package de.unidue.langtech.bachelor.reader;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.collection.CollectionException;
-import org.apache.uima.fit.component.JCasCollectionReader_ImplBase;
-import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
-import org.w3c.dom.Element;
 
 import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
-import de.tudarmstadt.ukp.dkpro.core.api.io.ResourceCollectionReaderBase.Resource;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import de.tudarmstadt.ukp.dkpro.core.api.resources.ResourceUtils;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
 
-
+/**
+ * Reader for the German Tiger Corpus
+ */
 public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 		{
     /**
      * Input file
      */
-    private String currentSentence;
-    private int sentenceCount;
     static int currentDocument;
 	static Object[] allDocuments;
 	static Resource currentFileName;
@@ -100,20 +89,29 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 					String[] parts = sentenceB.split("\n");
 					String actualSentence = "";
 					
+					/*
+					 * Iterates over all items of a sentence in Tiger Corpus
+					 * and extracts the needed information at their specific position
+					 */
 					for(String part : parts){
 						String[] wordPlusPOS = part.split("\t");
 							if(wordPlusPOS.length > 3){
-			                documentText += wordPlusPOS[1] + " ";
-			                allWords.add(wordPlusPOS[1]);
-			                allLemma.add(wordPlusPOS[2]);
-			                if(wordPlusPOS[4].equals(",")){
-			                	allPos.add("Interp");
-			                }else if(wordPlusPOS[4].contains(",") && wordPlusPOS[4].length()>1){
-			                allPos.add(wordPlusPOS[4].replaceAll(",",""));
-			                }else{
-			                	allPos.add(wordPlusPOS[4]);
-			                }
-			                actualSentence += wordPlusPOS[1] + " ";
+				                documentText += wordPlusPOS[1] + " ";
+				                allWords.add(wordPlusPOS[1]);
+				                allLemma.add(wordPlusPOS[2]);
+				                
+				                /* 
+				                 * semicolons have to be handled in a special way
+				                 * because otherwise they would cause errors later on
+				                 */ 	
+				                if(wordPlusPOS[4].equals(",")){
+				                	allPos.add("Interp");
+				                }else if(wordPlusPOS[4].contains(",") && wordPlusPOS[4].length()>1){
+				                	allPos.add(wordPlusPOS[4].replaceAll(",",""));
+				                }else{
+				                	allPos.add(wordPlusPOS[4]);
+				                }
+				                actualSentence += wordPlusPOS[1] + " ";
 							}
 					}
 					cleanedSentences.add(actualSentence);	
@@ -145,9 +143,7 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 		        		Token token = new Token(jcas, wordBeginn, wordEnd);
 		        		wordBeginn += word.length()+1;
 		        		wordEnd++;       
-		        		
-//		        		System.out.println(token.getCoveredText() + " " + allPos.get(posCount));
-		        		
+		        				        		
 				        POS pos = new POS(jcas);
 				        pos.setPosValue(allPos.get(posCount));
 				        pos.addToIndexes();
@@ -163,7 +159,8 @@ public class TigerConLLReader extends JCasResourceCollectionReader_ImplBase
 		        		posCount++;
 		        	}
 
-		        }   
+		        }  
+		        
 	        	jcas.setDocumentLanguage("ge");
 	        	DocumentMetaData meta = DocumentMetaData.create(jcas);
 	        	meta.setDocumentId(nextFile.getLocation());

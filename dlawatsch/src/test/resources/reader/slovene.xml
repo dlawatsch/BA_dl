@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="elan-anx2-sl" xml:lang="sl">
+   <teiHeader>
+   </teiHeader>
+   <text xml:id="elan-anx2-sl.text" xml:lang="sl">
+      <body>   
+         <ab xml:id="seg.1191" corresp="elan-anx2-en.xml#seg.1191">
+            <s>
+               <w lemma="obrazec" ana="Ncm" ctag="Ncmsn">Obrazec</w>
+               <c> </c>
+               <w lemma="morati" ana="Vmp" ctag="Vmpr3s">mora</w>
+               <c> </c>
+               <w lemma="imeti" ana="Vmp" ctag="Vmpn">imeti</w>
+               <c> </c>
+               <w lemma="tudi" ana="Q" ctag="Q">tudi</w>
+               <c> </c>
+               <w lemma="serijski" ana="Agp" ctag="Agpfsa">serijsko</w>
+               <c> </c>
+               <w lemma="številka" ana="Ncf" ctag="Ncfsa">številko</w>
+               <pc ctag=",">,</pc>
+               <c> </c>
+               <w lemma="tiskan" ana="Agp" ctag="Agpnsa">tiskano</w>
+               <c> </c>
+               <w lemma="ali" ana="C" ctag="Cc">ali</w>
+               <c> </c>
+               <w lemma="ne" ana="Q" ctag="Q">ne</w>
+               <pc ctag=",">,</pc>
+               <c> </c>
+               <w lemma="ki" ana="C" ctag="Cs">ki</w>
+               <c> </c>
+               <w lemma="omogočati" ana="Vmp" ctag="Vmpr3s">omogoča</w>
+               <c> </c>
+               <w lemma="njegov" ana="P" ctag="Ps3fsasm">njegovo</w>
+               <c> </c>
+               <w lemma="identifikacija" ana="Ncf" ctag="Ncfsa">identifikacijo</w>
+               <pc ctag=".">.</pc> 
+            </s>  
+         </ab> 
+      </body>   
+   </text>
+</TEI>

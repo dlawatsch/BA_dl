@@ -14,8 +14,8 @@ public class CreateBinariesTest {
     @Test
     public void testBinarieCreation()throws Exception
     {
-    	String corpusLocation = "src/main/resources/Binaries/polnish/**/";
-    	String language = "POLNISH";
+    	String corpusLocation = "src/main/resources/Binaries/polish/**/";
+    	String language = "POLISH";
 		SimplePipeline.runPipeline(
 	            CollectionReaderFactory.createReader(
 	                    NKJPReader.class,

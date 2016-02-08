@@ -30,9 +30,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.component.NoOpAnnotator;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
-import de.tudarmstadt.ukp.dkpro.core.io.tei.TeiReader;
-import de.tudarmstadt.ukp.dkpro.core.io.text.TextReader;
+
 import de.tudarmstadt.ukp.dkpro.lab.Lab;
 import de.tudarmstadt.ukp.dkpro.lab.task.Dimension;
 import de.tudarmstadt.ukp.dkpro.lab.task.ParameterSpace;
@@ -43,18 +41,16 @@ import de.tudarmstadt.ukp.dkpro.tc.crfsuite.CRFSuiteBatchCrossValidationReport;
 import de.tudarmstadt.ukp.dkpro.tc.crfsuite.task.serialization.SaveModelCRFSuiteBatchTask;
 import de.tudarmstadt.ukp.dkpro.tc.features.length.NrOfCharsUFE;
 import de.tudarmstadt.ukp.dkpro.tc.features.ngram.LuceneCharacterNGramUFE;
-import de.tudarmstadt.ukp.dkpro.tc.features.ngram.LuceneNGramUFE;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.CurrentToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.NextToken;
 import de.tudarmstadt.ukp.dkpro.tc.features.token.PreviousToken;
 import de.tudarmstadt.ukp.dkpro.tc.ml.ExperimentCrossValidation;
 import de.unidue.langtech.bachelor.reader.BinaryReaderRandomization;
-import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
-import de.unidue.langtech.bachelor.reader.NKJPReader;
 
-/**
- * Example class of how to train an own model
+/*
+ * Taken from Tobias Horsmanns FlexTagger and edited it so be suitable for this thesis
  */
+
 public class TrainAndSaveNewModelCRF implements Constants {
 static String experimentName;
 static File modelOutputFolder;
@@ -67,13 +63,14 @@ static String modelOutputDir;
 
 public static void TrainAndSaveCRF(String cLoc, String languageCODE, String homeDir, String modelOutputFoldera, int i, boolean useCoarseGrained){
 	iteration = i;
-	System.out.println(i*10000 + " Token Iteration");
 	corpus = cLoc;
 	languageCode = languageCODE;
 	homeFolder = homeDir;
+	
 	if(i == 1){
 		System.setProperty("DKPRO_HOME", homeFolder);
 	}
+	
 	i *= 10000;
 	modelOutputFolder = new File(modelOutputFoldera);
 	modelOutputFolder.mkdirs();
@@ -130,7 +127,10 @@ public static ParameterSpace getParameterSpace(String featureMode,
 					}));
 
 
-
+	/*
+	 * Here the binary files are read
+	 * and the sequence IDs get randomized inside  
+	 */
 	dimReaders.put(DIM_READER_TRAIN, BinaryReaderRandomization.class);
 	dimReaders.put(DIM_READER_TRAIN_PARAMS, Arrays.asList(
         		BinaryReaderRandomization.PARAM_SOURCE_LOCATION, corpus + "/LANGUAGES/" + languageCode + "/BINARIES/",
@@ -138,7 +138,6 @@ public static ParameterSpace getParameterSpace(String featureMode,
         		BinaryReaderRandomization.PARAM_CORPUSLOCATION, corpus,
         		BinaryReaderRandomization.PARAM_LANGUAGE, languageCode,
         		BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, String.valueOf(iteration * 10000) ,
-        		BinaryReaderRandomization.PARAM_USE_BASELINE, "false",
         		BinaryReaderRandomization.PARAM_COARSEGRAINED, "true",
         		BinaryReaderRandomization.PARAM_TYPE_SYSTEM_LOCATION, "typesystem.bin"));
 

@@ -14,14 +14,15 @@ import de.unidue.langtech.bachelor.Annotators.SequenceIdAnnotator;
 import de.unidue.langtech.bachelor.Annotators.WriteBinJcas;
 import de.unidue.langtech.bachelor.reader.BNCReader;
 import de.unidue.langtech.bachelor.reader.IslandicCorpusReader;
-import de.unidue.langtech.bachelor.reader.LatinReader;
 import de.unidue.langtech.bachelor.reader.NKJPReader;
 import de.unidue.langtech.bachelor.reader.SloveneReader;
 import de.unidue.langtech.bachelor.reader.TigerConLLReader;
 
 public class CreateBinariesPipeline {
-	
-	public static void writeToBinJCas(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene, boolean coarseGrained) throws ResourceInitializationException, UIMAException, IOException{		
+	/*
+	 * here the pipeline for building binaries is started for each language
+	 */
+	public static void writeToBinJCas(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean slovene) throws ResourceInitializationException, UIMAException, IOException{		
 		
 		if(english){
 			String language = "ENGLISH";
@@ -95,23 +96,6 @@ public class CreateBinariesPipeline {
 								WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
 		}
 		
-		if(latin){
-			String language = "LATIN";
-			SimplePipeline.runPipeline(
-	                CollectionReaderFactory.createReader(
-	                        LatinReader.class,
-	                        LatinReader.PARAM_SOURCE_LOCATION, corpusLocation + "LATIN/",
-	                        LatinReader.PARAM_PATTERNS, "*.txt"
-	                ),
-	                AnalysisEngineFactory.createEngineDescription(Build400TokenJCasEach.class,
-	                		Build400TokenJCasEach.PARAM_LANGUAGE, language),
-	                AnalysisEngineFactory.createEngineDescription(SequenceIdAnnotator.class, SequenceIdAnnotator.PARAM_CORPUSLOCATION, corpusLocation, 
-	                		SequenceIdAnnotator.PARAM_LANGUAGE, language),
-	                AnalysisEngineFactory.createEngineDescription(ExceedsUpperBoundChecker.class,
-	                		ExceedsUpperBoundChecker.PARAM_LANGUAGE, language),
-	                AnalysisEngineFactory.createEngineDescription(WriteBinJcas.class, WriteBinJcas.PARAM_LANGUAGE, language, 
-							WriteBinJcas.PARAM_CORPUSLOCATION, corpusLocation));
-		}
 		
 		if(slovene){
 			String language = "SLOVENE";

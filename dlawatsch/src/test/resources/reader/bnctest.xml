@@ -1,0 +1,16 @@
+<bncDoc xml:id="A00"><teiHeader></teiHeader>
+<s n="24"><w c5="AT0" hw="the" pos="ART">The </w>
+<w c5="NN1" hw="world" pos="SUBST">World </w>
+<w c5="NN1" hw="health" pos="SUBST">Health </w>
+<w c5="NN1" hw="organisation" pos="SUBST">Organisation </w>
+<w c5="NN2-VVZ" hw="project" pos="SUBST">projects </w>
+<w c5="CRD" hw="40" pos="ADJ">40 </w>
+<w c5="CRD" hw="million" pos="ADJ">million </w>
+<w c5="NN2" hw="infection" pos="SUBST">infections </w>
+<w c5="PRP" hw="by" pos="PREP">by </w>
+<w c5="AT0" hw="the" pos="ART">the </w>
+<w c5="NN1" hw="year" pos="SUBST">year </w>
+<w c5="CRD" hw="2000" pos="ADJ">2000</w>
+<c c5="PUN">.</c>
+</s>
+</bncDoc>
