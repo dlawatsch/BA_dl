@@ -26,8 +26,7 @@ public class RandomizationTest {
 				BinaryReaderRandomization.PARAM_PATTERNS, "testBinary.bin",
 				BinaryReaderRandomization.PARAM_LANGUAGE, "POLNISH",
 				BinaryReaderRandomization.PARAM_USE_X_MAX_TOKEN, "18",
-				BinaryReaderRandomization.PARAM_COARSEGRAINED, "false",
-				BinaryReaderRandomization.PARAM_USE_BASELINE, "false"
+				BinaryReaderRandomization.PARAM_COARSEGRAINED, "false"
 				);
 
 		for(JCas jcas : new JCasIterable(reader)){	

@@ -135,7 +135,7 @@ public class BaselineAnnotator extends BinaryCasReader{
         		posMappingProvider
         				.setDefault(
         						MappingProvider.LOCATION,
-        						"/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/is.map");
+        						"src/main/resources/POSMapping/is.map");
         		posMappingProvider.setDefault(MappingProvider.BASE_TYPE,
         				POS.class.getName());
         		posMappingProvider.setDefault("tagger.tagset", "default");

@@ -84,7 +84,7 @@ public class CreateBaselinePipeline implements Constants{
 	static String corpus;
 	static String modelOutputDir;
 	public static ConditionalFrequencyDistribution<String, String> cfd;
-	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean latin, boolean slovene, boolean coarseGrained) throws ResourceInitializationException, UIMAException, IOException{
+	public static void process(String corpusLocation, boolean islandic, boolean english, boolean german, boolean polnish, boolean slovene, boolean coarseGrained) throws ResourceInitializationException, UIMAException, IOException{
 		
 		String coarse = "";
 		if(coarseGrained){

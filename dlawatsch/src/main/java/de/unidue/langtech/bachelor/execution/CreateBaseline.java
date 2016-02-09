@@ -14,6 +14,7 @@ public class CreateBaseline {
 	/*Please provide the location of the extracted 
 	 * "CORPORA" folder (like "/home/dominik/Dokumente/BA/CORPORA/")
 	 * which can be found on the CD  
+	 * PLEASE NOTE: the zipped corpora for the languages should be directly in the CORPORA folder!
 	 */
 	String corpusLocation = "/home/dominikl/Dokumente/BA/CORPORA/";
 	

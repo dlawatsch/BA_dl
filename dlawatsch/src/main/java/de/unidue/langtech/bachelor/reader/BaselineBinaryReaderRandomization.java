@@ -16,30 +16,25 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.collection.CollectionException;
-import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
-import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.w3c.dom.Element;
 
 import de.tudarmstadt.ukp.dkpro.core.api.frequency.util.FrequencyDistribution;
-import de.tudarmstadt.ukp.dkpro.core.api.io.JCasResourceCollectionReader_ImplBase;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.resources.MappingProvider;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.io.bincas.BinaryCasReader;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationOutcome;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationSequence;
-import de.tudarmstadt.ukp.dkpro.tc.api.type.TextClassificationUnit;
-import de.unidue.langtech.bachelor.pipelines.BaselineTrainAndSaveModell;
 import de.unidue.langtech.bachelor.pipelines.CreateBaselinePipeline;
 import de.unidue.langtech.bachelor.type.SequenceID;
 
+/*
+ * This class creates the Baseline with a Majority Tag approach
+ */
 public class BaselineBinaryReaderRandomization extends BinaryCasReader{
     public static final String PARAM_CORPUSLOCATION = "PARAM_CORPUSLOCATION";
     @ConfigurationParameter(name = PARAM_CORPUSLOCATION, mandatory = true, defaultValue ="TEST")
@@ -98,27 +93,27 @@ public class BaselineBinaryReaderRandomization extends BinaryCasReader{
             String posMappingString ="";
             String overrider ="";
             if(language.equals("ISLANDIC")){
-            	posMappingString = "/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/is.map";
+            	posMappingString = "src/main/resources/POSMapping/is.map";
             	overrider = "is.map";
             }else if(language.equals("SLOVENE")){
-            	posMappingString = "/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/sl-SI.map";
+            	posMappingString = "src/main/resources/POSMapping/sl-SI.map";
             	overrider = "sl-SI.map";
             }else if(language.equals("ENGLISH")){
-            	posMappingString = "/home/dominikl/Dokumente/BA/BA_git/dkpro-core/de.tudarmstadt.ukp.dkpro.core.api.lexmorph-asl/src/main/resources/de/tudarmstadt/ukp/dkpro/core/api/lexmorph/tagset/en-c5-pos.map";
+            	posMappingString = "classpath:/de/tudarmstadt/ukp/dkpro/" + "core/api/lexmorph/tagset/en-c5-pos.map";
             	overrider = "en-c5-pos.map";   	
             }else if(language.equals("GERMAN")){
-            	posMappingString = "/home/dominikl/Dokumente/BA/BA_git/dkpro-core/de.tudarmstadt.ukp.dkpro.core.api.lexmorph-asl/src/main/resources/de/tudarmstadt/ukp/dkpro/core/api/lexmorph/tagset/de-pos.map";
+            	posMappingString = "classpath:/de/tudarmstadt/ukp/dkpro/" + "core/api/lexmorph/tagset/de-pos.map";
             	overrider = "de-pos.map";           	
             }else if(language.equals("POLNISH")){
-            	posMappingString = "/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/pl-ncp-simple.map";
-            	overrider = "de-pos.map";           	
+            	posMappingString = "src/main/resources/POSMapping/pl-ncp-simple.map";
+            	overrider = "pl-ncp-simple.map";           	
             }
             
     		posMappingProvider = new MappingProvider();
     		posMappingProvider
     				.setDefault(
     						MappingProvider.LOCATION,
-    						"/home/dominikl/git/BA_dl_final/dlawatsch/src/main/resources/POSMapping/is.map");
+    						"src/main/resources/POSMapping/is.map");
     		posMappingProvider.setDefault(MappingProvider.BASE_TYPE,
     				POS.class.getName());
     		posMappingProvider.setDefault("tagger.tagset", "default");

@@ -17,7 +17,8 @@ public class CreateAndTrainModels {
 		
 		/*Please provide the location of the extracted 
 		 * "CORPORA" folder (like "/home/dominik/Dokumente/BA/CORPORA/")
-		 * which can be found on the CD  
+		 * which can be found on the CD 
+		 * PLEASE NOTE: the zipped corpora for the languages should be directly in the CORPORA folder! 
 		 */
 		String corpusLocation = "/home/dominikl/Dokumente/BA/CORPORA/";
 		
@@ -25,11 +26,11 @@ public class CreateAndTrainModels {
 		 * if you dont wish those
 		 * corpora to be processed to Binaries
 		 */
-		boolean islandic = false;
-		boolean english = false;
-		boolean german = false;
+		boolean islandic = true;
+		boolean english = true;
+		boolean german = true;
 		boolean polnish = true;
-		boolean slovene = false;
+		boolean slovene = true;
 		
 		boolean useCoarseGrained = true;
 		
